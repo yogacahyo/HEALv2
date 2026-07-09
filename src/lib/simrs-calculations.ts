@@ -23,6 +23,8 @@ export function getShiftLabel(shift: ShiftType | null): string {
     Pagi: 'Pagi (07:00–14:00)',
     Sore: 'Sore (14:00–21:00)',
     Malam: 'Malam (21:00–07:00)',
+    Off: 'Libur (Off)',
+    Cuti: 'Cuti',
   };
   return labels[shift];
 }
