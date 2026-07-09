@@ -58,7 +58,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex bg-[var(--clay-bg)]">
+    <div className="min-h-screen flex items-start bg-[var(--clay-bg)]">
       {/* Overlay */}
       {sidebarOpen && (
         <div
@@ -69,7 +69,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-full w-72 bg-white z-40 sidebar-transition lg:translate-x-0 lg:static ${
+        className={`fixed top-0 left-0 h-full w-72 bg-white z-40 sidebar-transition lg:translate-x-0 lg:sticky lg:top-0 lg:self-start lg:h-screen lg:shrink-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
         style={{
@@ -110,8 +110,8 @@ export function AdminLayout({ children }: { children: ReactNode }) {
         </div>
 
         <nav
-          className="px-3 space-y-0.5 overflow-y-auto"
-          style={{ maxHeight: "calc(100vh - 100px)" }}
+          className="px-3 space-y-0.5 pb-8 overflow-y-auto"
+          style={{ maxHeight: "calc(100vh - 90px)" }}
         >
           <Link
             href="/"

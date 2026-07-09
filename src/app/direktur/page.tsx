@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { KPICard } from '@/components/common/KPICard';
 import { StatusBadge } from '@/components/common/StatusBadge';
@@ -63,10 +63,10 @@ const staffMonitoring = [
 
 // ─── Data detail modal: Optimasi Sebelum/Sesudah ───
 const optimasiData = [
-  { indikator: 'Risiko Double-Shift', Sebelum: 38, Sesudah: 14, satuan: '%' },
-  { indikator: 'Beban Tidak Merata', Sebelum: 46, Sesudah: 21, satuan: '%' },
-  { indikator: 'Staf Burnout Tinggi', Sebelum: 34, Sesudah: 18, satuan: 'orang' },
-  { indikator: 'Konflik Jadwal', Sebelum: 41, Sesudah: 17, satuan: 'kasus' },
+  { indikator: 'Double-Shift', indikatorFull: 'Risiko Double-Shift', Sebelum: 38, Sesudah: 14, satuan: '%' },
+  { indikator: 'Beban Kerja', indikatorFull: 'Beban Tidak Merata', Sebelum: 46, Sesudah: 21, satuan: '%' },
+  { indikator: 'Burnout Tinggi', indikatorFull: 'Staf Burnout Tinggi', Sebelum: 34, Sesudah: 18, satuan: 'orang' },
+  { indikator: 'Konflik Jadwal', indikatorFull: 'Konflik Jadwal', Sebelum: 41, Sesudah: 17, satuan: 'kasus' },
 ];
 
 const tooltipStyle = {
@@ -80,6 +80,18 @@ type ModalType = 'burnout' | 'unit' | 'staf' | 'optimasi' | null;
 
 export default function DirekturPage() {
   const [activeModal, setActiveModal] = useState<ModalType>(null);
+
+  // Disable body scroll when modal is open
+  useEffect(() => {
+    if (activeModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [activeModal]);
 
   return (
     <div className="min-h-screen">
@@ -213,15 +225,20 @@ export default function DirekturPage() {
 
           {/* Modal Panel */}
           <div
-            className="relative w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto bg-white sm:rounded-2xl rounded-t-2xl animate-slide-up z-10"
+            className="relative w-full sm:max-w-2xl sm:max-h-[90vh] h-[88vh] sm:h-auto max-h-[90vh] overflow-hidden bg-white sm:rounded-2xl rounded-t-2xl animate-slide-up z-10 flex flex-col"
             style={{
               boxShadow: '0 -8px 32px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.8)',
             }}
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Drag handle (mobile) */}
+            <div className="sm:hidden flex justify-center pt-3 pb-1">
+              <div className="w-10 h-1 rounded-full bg-surface-container-high" />
+            </div>
+
             {/* Modal Header */}
-            <div className="sticky top-0 bg-white/95 backdrop-blur-sm z-10 px-5 sm:px-6 pt-5 pb-3 border-b border-surface-container-high flex items-center justify-between" style={{ borderRadius: 'inherit' }}>
-              <h2 className="text-base sm:text-lg font-bold text-on-surface tracking-tight">
+            <div className="px-5 sm:px-6 pt-3 sm:pt-5 pb-3 border-b border-surface-container-high flex items-center justify-between shrink-0">
+              <h2 className="text-sm sm:text-lg font-bold text-on-surface tracking-tight pr-2">
                 {activeModal === 'burnout' && 'Detail Rata-rata Risiko Burnout'}
                 {activeModal === 'unit' && 'Detail Unit Risiko Tertinggi'}
                 {activeModal === 'staf' && 'Detail Staf Membutuhkan Istirahat'}
@@ -236,14 +253,14 @@ export default function DirekturPage() {
               </button>
             </div>
 
-            {/* Modal Body */}
-            <div className="px-5 sm:px-6 py-5 space-y-5">
+            {/* Modal Body — scrollable */}
+            <div className="px-5 sm:px-6 py-5 space-y-5 overflow-y-auto flex-1">
 
               {/* ── MODAL 1: Rata-rata Risiko Burnout ── */}
               {activeModal === 'burnout' && (
                 <>
                   <div className="flex items-center gap-4">
-                    <div className="clay-icon-tray bg-[#fff8e1]">
+                    <div className="clay-icon-tray bg-[#fff8e1] shrink-0">
                       <AlertTriangle className="w-5 h-5 text-[#ffb300]" />
                     </div>
                     <div>
@@ -290,7 +307,7 @@ export default function DirekturPage() {
               {activeModal === 'unit' && (
                 <>
                   <div className="flex items-center gap-4">
-                    <div className="clay-icon-tray bg-[#fce8e8]">
+                    <div className="clay-icon-tray bg-[#fce8e8] shrink-0">
                       <Activity className="w-5 h-5 text-[#e57373]" />
                     </div>
                     <div>
@@ -356,7 +373,7 @@ export default function DirekturPage() {
               {activeModal === 'staf' && (
                 <>
                   <div className="flex items-center gap-4">
-                    <div className="clay-icon-tray bg-[#fce8e8]">
+                    <div className="clay-icon-tray bg-[#fce8e8] shrink-0">
                       <Users className="w-5 h-5 text-[#e57373]" />
                     </div>
                     <div>
@@ -384,35 +401,37 @@ export default function DirekturPage() {
 
                   <div>
                     <h4 className="text-sm font-bold text-on-surface mb-3">Tabel Monitoring Staf</h4>
-                    <div className="overflow-x-auto table-responsive">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="bg-surface-container border-b border-surface-container-high">
-                            <th className="text-left p-3 font-semibold text-on-surface-variant text-xs">Nama Staf</th>
-                            <th className="text-left p-3 font-semibold text-on-surface-variant text-xs">Profesi</th>
-                            <th className="text-left p-3 font-semibold text-on-surface-variant text-xs">Unit</th>
-                            <th className="text-left p-3 font-semibold text-on-surface-variant text-xs">Shift</th>
-                            <th className="text-center p-3 font-semibold text-on-surface-variant text-xs">Skor</th>
-                            <th className="text-center p-3 font-semibold text-on-surface-variant text-xs">Risiko</th>
-                            <th className="text-left p-3 font-semibold text-on-surface-variant text-xs">Rekomendasi AI</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {staffMonitoring.map((s) => (
-                            <tr key={s.nama} className="border-b border-surface-container">
-                              <td className="p-3 text-xs font-medium text-on-surface whitespace-nowrap">{s.nama}</td>
-                              <td className="p-3"><StatusBadge status={s.profesi === 'Dokter' ? 'dokter' : 'perawat'} /></td>
-                              <td className="p-3 text-xs text-on-surface-variant">{s.unit}</td>
-                              <td className="p-3"><StatusBadge status={s.shift} /></td>
-                              <td className="p-3 text-center">
-                                <span className={`text-sm font-bold ${s.skor >= 80 ? 'text-[#c62828]' : s.skor >= 70 ? 'text-[#e65100]' : 'text-[#f57f17]'}`}>{s.skor}</span>
-                              </td>
-                              <td className="p-3 text-center"><StatusBadge status={s.risiko} /></td>
-                              <td className="p-3 text-xs text-on-surface-variant max-w-[180px]">{s.rekomendasi}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                    <div className="space-y-3">
+                      {staffMonitoring.map((s) => (
+                        <div key={s.nama} className="p-4 rounded-xl border border-surface-container-high bg-surface-container-low">
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-sm font-bold text-on-surface">{s.nama}</p>
+                            <StatusBadge status={s.risiko} />
+                          </div>
+                          <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 mb-3">
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] text-outline">Profesi:</span>
+                              <StatusBadge status={s.profesi === 'Dokter' ? 'dokter' : 'perawat'} />
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] text-outline">Shift:</span>
+                              <StatusBadge status={s.shift} />
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] text-outline">Unit:</span>
+                              <span className="text-xs font-medium text-on-surface">{s.unit}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] text-outline">Skor:</span>
+                              <span className={`text-sm font-bold ${s.skor >= 80 ? 'text-[#c62828]' : s.skor >= 70 ? 'text-[#e65100]' : 'text-[#f57f17]'}`}>{s.skor}</span>
+                            </div>
+                          </div>
+                          <div className="pt-2 border-t border-surface-container">
+                            <p className="text-[10px] text-outline mb-0.5">Rekomendasi AI:</p>
+                            <p className="text-xs text-on-surface-variant">{s.rekomendasi}</p>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
 
@@ -431,7 +450,7 @@ export default function DirekturPage() {
               {activeModal === 'optimasi' && (
                 <>
                   <div className="flex items-center gap-4">
-                    <div className="clay-icon-tray bg-[#e8f5e9]">
+                    <div className="clay-icon-tray bg-[#e8f5e9] shrink-0">
                       <TrendingUp className="w-5 h-5 text-[#2ae500]" />
                     </div>
                     <div>
@@ -442,14 +461,14 @@ export default function DirekturPage() {
 
                   <div>
                     <h4 className="text-sm font-bold text-on-surface mb-3">Perbandingan Sebelum dan Sesudah Optimasi</h4>
-                    <div className="chart-container" style={{ height: '260px' }}>
+                    <div className="chart-container" style={{ height: '280px' }}>
                       <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={optimasiData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                        <BarChart data={optimasiData} margin={{ top: 10, right: 10, left: -10, bottom: 20 }}>
                           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ebefed" />
-                          <XAxis dataKey="indikator" tick={{ fontSize: 10, fill: '#6b7c63' }} axisLine={false} tickLine={false} dy={10} />
+                          <XAxis dataKey="indikator" tick={{ fontSize: 10, fill: '#6b7c63' }} axisLine={false} tickLine={false} dy={10} interval={0} />
                           <YAxis tick={{ fontSize: 11, fill: '#6b7c63' }} axisLine={false} tickLine={false} />
                           <Tooltip contentStyle={tooltipStyle} cursor={{ fill: '#f6faf8' }} />
-                          <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
+                          <Legend iconType="circle" wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }} />
                           <Bar dataKey="Sebelum" fill="#e57373" radius={[4, 4, 0, 0]} name="Sebelum Optimasi" />
                           <Bar dataKey="Sesudah" fill="#106e00" radius={[4, 4, 0, 0]} name="Sesudah Optimasi" />
                         </BarChart>
@@ -457,13 +476,13 @@ export default function DirekturPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  <div className="grid grid-cols-2 gap-2">
                     {optimasiData.map((item) => {
                       const penurunan = item.Sebelum - item.Sesudah;
                       const pct = Math.round((penurunan / item.Sebelum) * 100);
                       return (
                         <div key={item.indikator} className="p-3 rounded-xl bg-surface-container-low border border-surface-container text-center">
-                          <p className="text-[10px] font-semibold text-on-surface-variant mb-1">{item.indikator}</p>
+                          <p className="text-[10px] font-semibold text-on-surface-variant mb-1">{item.indikatorFull}</p>
                           <div className="flex items-center justify-center gap-1.5 mb-1">
                             <span className="text-xs text-[#c62828] font-bold">{item.Sebelum}</span>
                             <span className="text-[10px] text-outline">→</span>
