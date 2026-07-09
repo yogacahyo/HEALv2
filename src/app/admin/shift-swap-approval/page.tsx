@@ -200,7 +200,30 @@ export default function ShiftSwapApprovalPage() {
       )}
 
       {/* Calendar Modal */}
-      {selectedReqForCalendar && (
+      {selectedReqForCalendar && (() => {
+        // Dummy data explicitly defined
+        const prevMonthShifts = Array.from({ length: 30 }).map((_, i) => {
+          const shifts = ['P', 'S', 'M', 'O', 'C', 'P', 'S'];
+          return shifts[i % 7];
+        });
+        const currMonthShifts = Array.from({ length: 31 }).map((_, i) => {
+          const shifts = ['S', 'M', 'O', 'P', 'C', 'S', 'O'];
+          return shifts[i % 7];
+        });
+
+        const prevP = prevMonthShifts.filter(s => s === 'P').length;
+        const prevS = prevMonthShifts.filter(s => s === 'S').length;
+        const prevM = prevMonthShifts.filter(s => s === 'M').length;
+        const prevO = prevMonthShifts.filter(s => s === 'O').length;
+        const prevC = prevMonthShifts.filter(s => s === 'C').length;
+
+        const currP = currMonthShifts.filter(s => s === 'P').length;
+        const currS = currMonthShifts.filter(s => s === 'S').length;
+        const currM = currMonthShifts.filter(s => s === 'M').length;
+        const currO = currMonthShifts.filter(s => s === 'O').length;
+        const currC = currMonthShifts.filter(s => s === 'C').length;
+
+        return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-surface rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
             {/* Modal Header */}
@@ -223,6 +246,38 @@ export default function ShiftSwapApprovalPage() {
 
             {/* Modal Body */}
             <div className="p-6 overflow-y-auto flex-1">
+              
+              {/* Shift Summary / Totals */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                
+                {/* Total Bulan Sebelumnya */}
+                <div className="flex flex-col gap-2 bg-surface-container-low p-3 sm:p-4 rounded-xl border border-surface-container">
+                  <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider text-center md:text-left">Total 1 Bulan Terakhir</span>
+                  <div className="flex items-center justify-between gap-1 overflow-x-auto">
+                    <div className="text-center min-w-max"><span className="block text-lg font-extrabold text-blue-700">{prevP}</span><span className="text-[10px] font-bold text-on-surface-variant">Pagi</span></div>
+                    <div className="text-center min-w-max"><span className="block text-lg font-extrabold text-amber-700">{prevS}</span><span className="text-[10px] font-bold text-on-surface-variant">Sore</span></div>
+                    <div className="text-center min-w-max"><span className="block text-lg font-extrabold text-slate-700">{prevM}</span><span className="text-[10px] font-bold text-on-surface-variant">Malam</span></div>
+                    <div className="w-px bg-surface-container-high h-6 mx-1"></div>
+                    <div className="text-center min-w-max"><span className="block text-lg font-extrabold text-green-700">{prevO}</span><span className="text-[10px] font-bold text-on-surface-variant">Off</span></div>
+                    <div className="text-center min-w-max"><span className="block text-lg font-extrabold text-gray-700">{prevC}</span><span className="text-[10px] font-bold text-on-surface-variant">Cuti</span></div>
+                  </div>
+                </div>
+
+                {/* Total Bulan Ini */}
+                <div className="flex flex-col gap-2 bg-surface-container-low p-3 sm:p-4 rounded-xl border border-primary/20">
+                  <span className="text-[10px] font-bold text-primary uppercase tracking-wider text-center md:text-left">Total Bulan Ini</span>
+                  <div className="flex items-center justify-between gap-1 overflow-x-auto">
+                    <div className="text-center min-w-max"><span className="block text-lg font-extrabold text-blue-700">{currP}</span><span className="text-[10px] font-bold text-on-surface-variant">Pagi</span></div>
+                    <div className="text-center min-w-max"><span className="block text-lg font-extrabold text-amber-700">{currS}</span><span className="text-[10px] font-bold text-on-surface-variant">Sore</span></div>
+                    <div className="text-center min-w-max"><span className="block text-lg font-extrabold text-slate-700">{currM}</span><span className="text-[10px] font-bold text-on-surface-variant">Malam</span></div>
+                    <div className="w-px bg-surface-container-high h-6 mx-1"></div>
+                    <div className="text-center min-w-max"><span className="block text-lg font-extrabold text-green-700">{currO}</span><span className="text-[10px] font-bold text-on-surface-variant">Off</span></div>
+                    <div className="text-center min-w-max"><span className="block text-lg font-extrabold text-gray-700">{currC}</span><span className="text-[10px] font-bold text-on-surface-variant">Cuti</span></div>
+                  </div>
+                </div>
+
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
                 {/* Previous Month */}
@@ -232,16 +287,14 @@ export default function ShiftSwapApprovalPage() {
                     {['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'].map((d) => (
                       <div key={d} className="text-xs font-semibold text-on-surface-variant py-2">{d}</div>
                     ))}
-                    {Array.from({ length: 30 }).map((_, i) => {
-                      // Dummy shifts logic
-                      const shifts = ['P', 'S', 'M', 'O', 'P', 'P', 'S'];
-                      const shift = shifts[i % 7];
+                    {prevMonthShifts.map((shift, i) => {
                       let bgColor = 'bg-gray-100';
                       let textColor = 'text-gray-800';
                       if (shift === 'P') { bgColor = 'bg-blue-100'; textColor = 'text-blue-800'; }
                       if (shift === 'S') { bgColor = 'bg-amber-100'; textColor = 'text-amber-800'; }
                       if (shift === 'M') { bgColor = 'bg-slate-700'; textColor = 'text-slate-100'; }
                       if (shift === 'O') { bgColor = 'bg-green-100'; textColor = 'text-green-800'; }
+                      if (shift === 'C') { bgColor = 'bg-gray-200'; textColor = 'text-gray-600'; }
                       return (
                         <div key={`prev-${i}`} className="aspect-square flex flex-col items-center justify-center p-1 border border-surface-container-low rounded-lg">
                           <span className="text-[10px] text-outline mb-1">{i + 1}</span>
@@ -261,16 +314,14 @@ export default function ShiftSwapApprovalPage() {
                     {['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'].map((d) => (
                       <div key={d} className="text-xs font-semibold text-on-surface-variant py-2">{d}</div>
                     ))}
-                    {Array.from({ length: 31 }).map((_, i) => {
-                      // Dummy shifts logic
-                      const shifts = ['S', 'M', 'O', 'P', 'P', 'S', 'O'];
-                      const shift = shifts[i % 7];
+                    {currMonthShifts.map((shift, i) => {
                       let bgColor = 'bg-gray-100';
                       let textColor = 'text-gray-800';
                       if (shift === 'P') { bgColor = 'bg-blue-100'; textColor = 'text-blue-800'; }
                       if (shift === 'S') { bgColor = 'bg-amber-100'; textColor = 'text-amber-800'; }
                       if (shift === 'M') { bgColor = 'bg-slate-700'; textColor = 'text-slate-100'; }
                       if (shift === 'O') { bgColor = 'bg-green-100'; textColor = 'text-green-800'; }
+                      if (shift === 'C') { bgColor = 'bg-gray-200'; textColor = 'text-gray-600'; }
                       return (
                         <div key={`curr-${i}`} className={`aspect-square flex flex-col items-center justify-center p-1 border rounded-lg ${i + 1 === 16 ? 'border-primary bg-primary/5' : 'border-surface-container-low'}`}>
                           <span className="text-[10px] text-outline mb-1">{i + 1}</span>
@@ -290,11 +341,13 @@ export default function ShiftSwapApprovalPage() {
                 <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-amber-100 border border-amber-200"></span> Sore (14-21)</div>
                 <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-slate-700 border border-slate-800"></span> Malam (21-07)</div>
                 <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-green-100 border border-green-200"></span> Libur (Off)</div>
+                <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-gray-200 border border-gray-300"></span> Cuti</div>
               </div>
             </div>
           </div>
         </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
