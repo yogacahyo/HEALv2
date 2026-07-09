@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { SectionHeader } from "@/components/common/SectionHeader";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { KPICard } from "@/components/common/KPICard";
-import { ResponsiveChartCard } from "@/components/common/ResponsiveChartCard";
 import {
   CalendarClock,
   Users,
@@ -13,332 +12,399 @@ import {
   Lightbulb,
   CheckCircle,
 } from "lucide-react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-  Legend,
-  Cell,
-} from "recharts";
 
-// (E) Tabel Rekomendasi Jadwal Cerdas
-const rekomendasiJadwal = [
+// Types
+interface DailyShift {
+  day: number;
+  shift: string;
+}
+
+interface StaffSchedule {
+  nama: string;
+  profesi: string;
+  unit: string;
+  risiko: string;
+  dailyShifts: DailyShift[];
+  totalShift: number;
+  totalPagi: number;
+  totalSore: number;
+  totalMalam: number;
+  totalOff: number;
+  fairnessScore: number;
+  status: string;
+}
+
+interface ConflictInfo {
+  staff: string;
+  unit: string;
+  tanggal: string;
+  jenis: string;
+  penyebab: string;
+  rekomendasi: string;
+}
+
+// Seed Data
+const dummyStaffList = [
   {
+    nama: "dr. Andika Pratama",
+    profesi: "Dokter",
     unit: "IGD",
-    risikoSaatIni: "Kritis",
-    masalahUtama: "Lonjakan pasien malam dan shift beruntun",
-    rekomendasiAI:
-      "Terapkan shift maksimal 8 jam, rotasi maju, dan jeda 24 jam setelah shift malam",
-    dampak: "Penurunan fatigue dan risiko kesalahan kerja",
-    prioritas: "Sangat Tinggi",
+    risiko: "Kritis",
   },
   {
+    nama: "Ns. Rina Wulandari",
+    profesi: "Perawat",
     unit: "ICU / NICU / PICU",
-    risikoSaatIni: "Tinggi",
-    masalahUtama:
-      "Beban emosional tinggi dan kebutuhan monitoring pasien kritis",
-    rekomendasiAI:
-      "Batasi lembur, hindari double-shift, dan jaga rasio perawat-pasien 1:1 atau 1:2",
-    dampak: "Peningkatan fokus klinis dan keselamatan pasien",
-    prioritas: "Sangat Tinggi",
+    risiko: "Tinggi",
   },
   {
+    nama: "dr. Maya Lestari",
+    profesi: "Dokter",
     unit: "Kamar Operasi",
-    risikoSaatIni: "Tinggi",
-    masalahUtama: "Operasi panjang dan penumpukan jadwal elektif",
-    rekomendasiAI:
-      "Seimbangkan jadwal operasi elektif dan berikan waktu pemulihan setelah operasi panjang",
-    dampak: "Penurunan kelelahan fisik dan peningkatan kesiapan tim operasi",
-    prioritas: "Tinggi",
+    risiko: "Tinggi",
   },
   {
+    nama: "Ns. Siti Aisyah",
+    profesi: "Perawat",
     unit: "Ruang Bersalin",
-    risikoSaatIni: "Sedang",
-    masalahUtama: "Lonjakan persalinan malam dan panggilan mendadak",
-    rekomendasiAI:
-      "Susun on-call team terstruktur dan jadwal cadangan yang transparan",
-    dampak: "Penurunan kecemasan staf dan peningkatan kesiapan layanan",
-    prioritas: "Tinggi",
+    risiko: "Sedang",
   },
   {
+    nama: "Ns. Dwi Santoso",
+    profesi: "Perawat",
     unit: "Isolasi / Onkologi",
-    risikoSaatIni: "Sedang",
-    masalahUtama:
-      "Compassion fatigue dan interaksi jangka panjang dengan pasien kronis",
-    rekomendasiAI: "Terapkan rotasi periodik antar-bangsal setiap 6 bulan",
-    dampak: "Penyegaran mental dan penurunan kelelahan emosional",
-    prioritas: "Menengah-Tinggi",
+    risiko: "Sedang",
+  },
+  {
+    nama: "dr. Bima Saputra",
+    profesi: "Dokter",
+    unit: "IGD",
+    risiko: "Sedang",
+  },
+  {
+    nama: "Ns. Laila Putri",
+    profesi: "Perawat",
+    unit: "ICU / NICU / PICU",
+    risiko: "Sedang",
+  },
+  {
+    nama: "Ns. Arif Hidayat",
+    profesi: "Perawat",
+    unit: "IGD",
+    risiko: "Tinggi",
+  },
+  {
+    nama: "dr. Citra Dewi",
+    profesi: "Dokter",
+    unit: "Ruang Bersalin",
+    risiko: "Sedang",
+  },
+  {
+    nama: "Ns. Yoga Prasetyo",
+    profesi: "Perawat",
+    unit: "Kamar Operasi",
+    risiko: "Rendah",
+  },
+  {
+    nama: "Ns. Hana Maharani",
+    profesi: "Perawat",
+    unit: "Isolasi / Onkologi",
+    risiko: "Rendah",
+  },
+  {
+    nama: "dr. Fajar Nugroho",
+    profesi: "Dokter",
+    unit: "ICU / NICU / PICU",
+    risiko: "Sedang",
   },
 ];
 
-// (G) Data Sebelum vs Sesudah Optimasi
-const optimasiData = [
-  {
-    indikator: "Risiko Double-Shift",
-    Sebelum: 38,
-    Sesudah: 14,
-    satuan: "%",
-  },
-  {
-    indikator: "Beban Tidak Merata",
-    Sebelum: 46,
-    Sesudah: 21,
-    satuan: "%",
-  },
-  {
-    indikator: "Staf Burnout Tinggi",
-    Sebelum: 34,
-    Sesudah: 18,
-    satuan: "orang",
-  },
-  {
-    indikator: "Konflik Jadwal",
-    Sebelum: 41,
-    Sesudah: 17,
-    satuan: "kasus",
-  },
-];
+function generateScheduleData() {
+  const daysInMonth = 31;
+  const schedules: StaffSchedule[] = [];
+  const conflicts: ConflictInfo[] = [];
 
-const tooltipStyle = {
-  borderRadius: "16px",
-  border: "none",
-  boxShadow:
-    "4px 4px 10px rgba(0,0,0,0.08), -2px -2px 6px rgba(255,255,255,0.8), inset 1px 1px 2px rgba(255,255,255,0.6)",
-  fontFamily: "Plus Jakarta Sans",
+  const baseSequence = ["P", "S", "M", "O"];
+
+  for (let i = 0; i < dummyStaffList.length; i++) {
+    const staff = dummyStaffList[i];
+    const dailyShifts: DailyShift[] = [];
+
+    let totalShift = 0;
+    let totalPagi = 0;
+    let totalSore = 0;
+    let totalMalam = 0;
+    let totalOff = 0;
+
+    const sequenceOffset = i % 4;
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      let shift = baseSequence[(day + sequenceOffset) % 4];
+
+      // Aturan khusus berdasarkan risiko dan unit
+      if (staff.risiko === "Kritis" || staff.risiko === "Tinggi") {
+        if (shift === "M" && day % 3 === 0) {
+          shift = "O"; // kurangi shift malam
+        }
+      }
+
+      if (shift !== "O" && shift !== "C") totalShift++;
+      if (shift === "P") totalPagi++;
+      if (shift === "S") totalSore++;
+      if (shift === "M") totalMalam++;
+      if (shift === "O") totalOff++;
+
+      dailyShifts.push({ day, shift });
+    }
+
+    const fairnessScore = Math.max(
+      0,
+      100 - Math.max(0, totalMalam - 6) * 5 - Math.max(0, totalShift - 22) * 4,
+    );
+
+    let status = "Aman";
+    if (fairnessScore < 70) status = "Rekomendasi Revisi";
+    else if (totalMalam > 6) status = "Perlu Review";
+
+    schedules.push({
+      ...staff,
+      dailyShifts,
+      totalShift,
+      totalPagi,
+      totalSore,
+      totalMalam,
+      totalOff,
+      fairnessScore,
+      status,
+    });
+  }
+
+  return { schedules, conflicts };
+}
+
+// Komponen Badge Shift
+const ShiftBadge = ({ shift }: { shift: string }) => {
+  let bgColor = "";
+  let textColor = "";
+  let tooltip = "";
+
+  switch (shift) {
+    case "P":
+      bgColor = "bg-blue-100";
+      textColor = "text-blue-800";
+      tooltip = "Shift Pagi 07:00–14:00";
+      break;
+    case "S":
+      bgColor = "bg-amber-100";
+      textColor = "text-amber-800";
+      tooltip = "Shift Sore 14:00–21:00";
+      break;
+    case "M":
+      bgColor = "bg-slate-700";
+      textColor = "text-slate-100";
+      tooltip = "Shift Malam 21:00–07:00";
+      break;
+    case "O":
+      bgColor = "bg-green-100";
+      textColor = "text-green-800";
+      tooltip = "Off / Istirahat";
+      break;
+    case "C":
+      bgColor = "bg-gray-100";
+      textColor = "text-gray-600";
+      tooltip = "Cuti";
+      break;
+    default:
+      bgColor = "bg-gray-100";
+      textColor = "text-gray-800";
+      tooltip = "";
+  }
+
+  return (
+    <div className="relative group flex items-center justify-center w-7 h-7 shrink-0">
+      <div
+        className={`w-full h-full flex items-center justify-center rounded-md text-xs font-bold cursor-default ${bgColor} ${textColor}`}
+        title={tooltip}
+      >
+        {shift}
+      </div>
+    </div>
+  );
 };
 
 export default function AutoRosteringPage() {
+  const { schedules: allSchedules, conflicts: allConflicts } = useMemo(
+    () => generateScheduleData(),
+    [],
+  );
+
+  const [filterUnit, setFilterUnit] = useState("Semua Unit");
+  const [filterProfesi, setFilterProfesi] = useState("Semua Profesi");
+  const [filterRisiko, setFilterRisiko] = useState("Semua Risiko");
+
+  const filteredSchedules = useMemo(() => {
+    return allSchedules.filter((s) => {
+      if (filterUnit !== "Semua Unit" && s.unit !== filterUnit) return false;
+      if (filterProfesi !== "Semua Profesi" && s.profesi !== filterProfesi)
+        return false;
+      if (filterRisiko !== "Semua Risiko" && !s.risiko.includes(filterRisiko))
+        return false;
+
+      return true;
+    });
+  }, [allSchedules, filterUnit, filterProfesi, filterRisiko]);
+
+  const filteredConflicts = useMemo(() => {
+    return allConflicts.filter((c) => {
+      if (filterUnit !== "Semua Unit" && c.unit !== filterUnit) return false;
+      return true;
+    });
+  }, [allConflicts, filterUnit]);
+
+  // Aggregate KPIs
+  const totalStaff = filteredSchedules.length;
+  const totalSlots = filteredSchedules.reduce(
+    (acc, curr) => acc + curr.totalShift,
+    0,
+  );
+  const totalConflicts = filteredConflicts.length;
+  const avgFairness =
+    totalStaff > 0
+      ? Math.round(
+          filteredSchedules.reduce((acc, curr) => acc + curr.fairnessScore, 0) /
+            totalStaff,
+        )
+      : 0;
+
+  const handleReset = () => {
+    setFilterUnit("Semua Unit");
+    setFilterProfesi("Semua Profesi");
+    setFilterRisiko("Semua Risiko");
+  };
+
   return (
     <div className="space-y-6">
-      <SectionHeader
-        title="Mesin Optimasi Jadwal Cerdas"
-        subtitle="Engine B — Otak utama sistem yang menerima input dari Engine A (Peramalan) dan Engine C (Kelelahan) untuk menyusun jadwal optimal yang adil, aman, dan sesuai batas risiko burnout"
-        simulationLabel="Simulation Mode"
-      />
-
-      {/* KPI Cards */}
-      <div className="kpi-grid">
-        <KPICard
-          title="Jadwal Teroptimasi"
-          value="152"
-          subtitle="Total jadwal shift yang berhasil dioptimasi bulan ini"
-          icon={CalendarClock}
-          color="green"
-        />
-        <KPICard
-          title="Konflik Dikurangi"
-          value="24 kasus"
-          subtitle="Potensi konflik jadwal yang berhasil dieliminasi"
-          icon={CheckCircle}
-          color="blue"
-        />
-        <KPICard
-          title="Double-Shift Dicegah"
-          value="32%"
-          subtitle="Penurunan risiko double-shift dari optimasi"
-          icon={AlertTriangle}
-          color="amber"
-        />
-        <KPICard
-          title="Pemerataan Beban"
-          value="82%"
-          subtitle="Tingkat pemerataan beban kerja antar-staf"
-          icon={TrendingUp}
-          color="green"
-        />
-      </div>
-
-      {/* (G) Grafik Sebelum dan Sesudah Optimasi */}
-      <ResponsiveChartCard
-        title="Perbandingan Kondisi Sebelum dan Sesudah Optimasi AI"
-        subtitle="Grafik ini menunjukkan dampak AI dalam menurunkan konflik jadwal, risiko double-shift, dan jumlah staf dengan risiko burnout tinggi."
-        height={300}
-      >
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={optimasiData}
-            margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
-          >
-            <CartesianGrid
-              strokeDasharray="3 3"
-              vertical={false}
-              stroke="#ebefed"
-            />
-            <XAxis
-              dataKey="indikator"
-              tick={{ fontSize: 10, fill: "#6b7c63" }}
-              axisLine={false}
-              tickLine={false}
-              dy={10}
-            />
-            <YAxis
-              tick={{ fontSize: 11, fill: "#6b7c63" }}
-              axisLine={false}
-              tickLine={false}
-            />
-            <Tooltip
-              contentStyle={tooltipStyle}
-              cursor={{ fill: "#f6faf8" }}
-            />
-            <Legend
-              iconType="circle"
-              wrapperStyle={{ fontSize: "12px", paddingTop: "10px" }}
-            />
-            <Bar
-              dataKey="Sebelum"
-              fill="#e57373"
-              radius={[4, 4, 0, 0]}
-              name="Sebelum Optimasi"
-            />
-            <Bar
-              dataKey="Sesudah"
-              fill="#106e00"
-              radius={[4, 4, 0, 0]}
-              name="Sesudah Optimasi"
-            />
-          </BarChart>
-        </ResponsiveContainer>
-      </ResponsiveChartCard>
-
-      {/* Detail Sebelum vs Sesudah */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        {optimasiData.map((item) => {
-          const penurunan = item.Sebelum - item.Sesudah;
-          const pct = Math.round((penurunan / item.Sebelum) * 100);
-          return (
-            <div key={item.indikator} className="clay-card-sm p-4">
-              <p className="text-xs font-semibold text-on-surface-variant mb-2">
-                {item.indikator}
-              </p>
-              <div className="flex items-end gap-3 mb-2">
-                <div className="text-center">
-                  <p className="text-lg font-bold text-[#c62828]">
-                    {item.Sebelum}
-                    <span className="text-xs ml-0.5">{item.satuan}</span>
-                  </p>
-                  <p className="text-[10px] text-outline">Sebelum</p>
-                </div>
-                <span className="text-outline text-sm mb-1">→</span>
-                <div className="text-center">
-                  <p className="text-lg font-bold text-[#106e00]">
-                    {item.Sesudah}
-                    <span className="text-xs ml-0.5">{item.satuan}</span>
-                  </p>
-                  <p className="text-[10px] text-outline">Sesudah</p>
-                </div>
-              </div>
-              <div className="w-full h-2 bg-surface-container-high rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-neon transition-all"
-                  style={{ width: `${pct}%` }}
-                />
-              </div>
-              <p className="text-[10px] text-[#106e00] font-semibold mt-1">
-                ↓ {pct}% penurunan
-              </p>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* (E) Tabel Rekomendasi Jadwal Cerdas */}
       <div>
-        <SectionHeader
-          title="Tabel Rekomendasi Jadwal Cerdas"
-          subtitle="Rekomendasi optimasi jadwal per unit berdasarkan analisis Engine A dan Engine C"
-        />
+        <SectionHeader title="Auto Rostering Simulation" />
+      </div>
+
+      {/* Main Simulation Table */}
+      <div>
         <div className="clay-card-sm overflow-hidden">
-          <div className="table-responsive">
-            <table className="w-full text-sm">
+          <div className="w-full overflow-x-auto max-w-full pb-4">
+            <table className="w-full text-sm border-collapse min-w-max">
               <thead>
                 <tr className="bg-surface-container border-b border-surface-container-high">
-                  <th className="text-left p-3 font-semibold text-on-surface-variant text-xs">
+                  <th className="sticky left-0 z-30 bg-surface-container text-center p-3 font-semibold text-on-surface-variant text-xs border-r border-surface-container-high min-w-[40px] max-w-[40px]">
+                    No
+                  </th>
+                  <th className="sticky left-[40px] z-30 bg-surface-container text-left p-3 font-semibold text-on-surface-variant text-xs border-r border-surface-container-high min-w-[160px] max-w-[160px] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] xl:shadow-none">
+                    Nama Staf
+                  </th>
+                  <th className="static xl:sticky xl:left-[200px] z-30 bg-surface-container text-left p-3 font-semibold text-on-surface-variant text-xs border-r border-surface-container-high min-w-[90px] max-w-[90px]">
+                    Profesi
+                  </th>
+                  <th className="static xl:sticky xl:left-[290px] z-30 bg-surface-container text-left p-3 font-semibold text-on-surface-variant text-xs border-r border-surface-container-high min-w-[140px] max-w-[140px]">
                     Unit
                   </th>
-                  <th className="text-center p-3 font-semibold text-on-surface-variant text-xs">
-                    Risiko Saat Ini
-                  </th>
-                  <th className="text-left p-3 font-semibold text-on-surface-variant text-xs">
-                    Masalah Utama
-                  </th>
-                  <th className="text-left p-3 font-semibold text-on-surface-variant text-xs">
-                    Rekomendasi AI
-                  </th>
-                  <th className="text-left p-3 font-semibold text-on-surface-variant text-xs">
-                    Dampak yang Diharapkan
-                  </th>
-                  <th className="text-center p-3 font-semibold text-on-surface-variant text-xs">
-                    Prioritas
-                  </th>
+
+                  {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                    <th
+                      key={day}
+                      className="text-center p-2 font-semibold text-on-surface-variant text-xs border-r border-surface-container-high min-w-[40px] max-w-[40px]"
+                    >
+                      {day}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
-                {rekomendasiJadwal.map((row) => (
-                  <tr
-                    key={row.unit}
-                    className="border-b border-surface-container hover:bg-surface-container/50"
-                  >
-                    <td className="p-3 text-xs font-medium text-on-surface whitespace-nowrap">
-                      {row.unit}
-                    </td>
-                    <td className="p-3 text-center">
-                      <StatusBadge status={row.risikoSaatIni} />
-                    </td>
-                    <td className="p-3 text-xs text-on-surface-variant max-w-[180px]">
-                      {row.masalahUtama}
-                    </td>
-                    <td className="p-3 text-xs text-on-surface-variant max-w-[220px]">
-                      {row.rekomendasiAI}
-                    </td>
-                    <td className="p-3 text-xs text-on-surface-variant max-w-[180px]">
-                      {row.dampak}
-                    </td>
-                    <td className="p-3 text-center">
-                      <StatusBadge status={row.prioritas} />
+                {filteredSchedules.length > 0 ? (
+                  filteredSchedules.map((staff, index) => (
+                    <tr
+                      key={staff.nama}
+                      className="border-b border-surface-container hover:bg-surface-container/50"
+                    >
+                      <td className="sticky left-0 z-10 bg-surface text-center p-3 text-xs font-medium text-on-surface border-r border-surface-container-high min-w-[40px] max-w-[40px]">
+                        {index + 1}
+                      </td>
+                      <td className="sticky left-[40px] z-10 bg-surface p-3 text-xs font-bold text-on-surface border-r border-surface-container-high truncate min-w-[160px] max-w-[160px] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] xl:shadow-none">
+                        {staff.nama}
+                      </td>
+                      <td className="static xl:sticky xl:left-[200px] z-10 bg-surface p-3 border-r border-surface-container-high min-w-[90px] max-w-[90px]">
+                        <StatusBadge
+                          status={
+                            staff.profesi === "Dokter" ? "dokter" : "perawat"
+                          }
+                        />
+                      </td>
+                      <td className="static xl:sticky xl:left-[290px] z-10 bg-surface p-3 text-xs text-on-surface-variant border-r border-surface-container-high truncate min-w-[140px] max-w-[140px]">
+                        {staff.unit}
+                      </td>
+
+                      {staff.dailyShifts.map((ds) => (
+                        <td
+                          key={ds.day}
+                          className="p-1 border-r border-surface-container-high text-center min-w-[40px] max-w-[40px]"
+                        >
+                          <div className="flex justify-center">
+                            <ShiftBadge shift={ds.shift} />
+                          </div>
+                        </td>
+                      ))}
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={35}
+                      className="p-8 text-center text-sm text-on-surface-variant"
+                    >
+                      Tidak ada data staf yang sesuai dengan filter.
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
         </div>
-      </div>
 
-      {/* Insight */}
-      <div className="clay-card-sm p-4 border-l-4 border-l-[#81c784]">
-        <div className="flex items-start gap-2">
-          <Lightbulb className="w-4 h-4 text-[#106e00] mt-0.5 shrink-0" />
-          <p className="text-xs sm:text-sm text-on-surface-variant leading-relaxed">
-            <strong>Insight Engine B:</strong> Optimasi jadwal berhasil
-            menurunkan potensi double-shift sebesar 32% dan meningkatkan
-            pemerataan beban kerja antar-staf. Sistem merekomendasikan
-            penerapan rotasi maju (pagi → sore → malam) di seluruh unit
-            prioritas untuk hasil optimal.
-          </p>
-        </div>
-      </div>
-
-      {/* Legenda Prioritas */}
-      <div className="clay-card-sm p-4">
-        <h4 className="text-xs font-semibold text-on-surface-variant mb-2">
-          Legenda Prioritas
-        </h4>
-        <div className="flex flex-wrap gap-3 text-xs">
-          <div className="flex items-center gap-1.5">
-            <div className="w-4 h-4 rounded bg-[#fce8e8]" />
-            <span className="text-[#c62828]">Kritis / Sangat Tinggi</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-4 h-4 rounded bg-[#fff8e1]" />
-            <span className="text-[#f57f17]">Tinggi / Sedang</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-4 h-4 rounded bg-[#e8f5e9]" />
-            <span className="text-[#106e00]">Rendah / Menengah</span>
+        {/* Shift Legend */}
+        <div className="clay-card-sm p-4">
+          <h4 className="text-xs font-semibold text-on-surface-variant mb-2">
+            Legenda Shift
+          </h4>
+          <div className="flex flex-wrap gap-4 text-xs">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded bg-blue-100 text-blue-800 flex items-center justify-center font-bold">
+                P
+              </div>{" "}
+              <span>Pagi</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
+                S
+              </div>{" "}
+              <span>Sore</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded bg-slate-700 text-slate-100 flex items-center justify-center font-bold">
+                M
+              </div>{" "}
+              <span>Malam</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded bg-green-100 text-green-800 flex items-center justify-center font-bold">
+                O
+              </div>{" "}
+              <span>Off</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded bg-gray-100 text-gray-600 flex items-center justify-center font-bold">
+                C
+              </div>{" "}
+              <span>Cuti</span>
+            </div>
           </div>
         </div>
       </div>

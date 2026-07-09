@@ -34,7 +34,13 @@ const burnoutPerUnitData = [
   { unit: "Isolasi/Onkologi", risiko: 68 },
 ];
 
-const burnoutBarColors = ["#c62828", "#e57373", "#ffb74d", "#ffb74d", "#81c784"];
+const burnoutBarColors = [
+  "#c62828",
+  "#e57373",
+  "#ffb74d",
+  "#ffb74d",
+  "#81c784",
+];
 
 // Data dummy Beban Kerja per Shift (C)
 const bebanKerjaData = [
@@ -46,7 +52,12 @@ const bebanKerjaData = [
 ];
 
 // Data dummy Heatmap Risiko Kelelahan (D)
-const heatmapData: { hari: string; Pagi: number; Sore: number; Malam: number }[] = [
+const heatmapData: {
+  hari: string;
+  Pagi: number;
+  Sore: number;
+  Malam: number;
+}[] = [
   { hari: "Senin", Pagi: 2, Sore: 2, Malam: 3 },
   { hari: "Selasa", Pagi: 1, Sore: 2, Malam: 3 },
   { hari: "Rabu", Pagi: 2, Sore: 3, Malam: 4 },
@@ -124,12 +135,6 @@ export default function CommandCenterPage() {
           subtitle="Dashboard ringkasan eksekutif — pemantauan burnout dan efektivitas optimasi shift tenaga medis"
           simulationLabel="Simulation Mode"
         />
-        <div className="flex items-center gap-2">
-          <span className="clay-badge bg-[#e8f5e9] text-[#106e00] border border-[#a5d6a7] text-xs">
-            <Brain className="w-3 h-3" />
-            AI Core Engine Aktif
-          </span>
-        </div>
       </div>
 
       {/* Data Integration Status */}
@@ -221,7 +226,11 @@ export default function CommandCenterPage() {
                 cursor={{ fill: "#f6faf8" }}
                 formatter={(value: any) => [`${value}%`, "Risiko Burnout"]}
               />
-              <Bar dataKey="risiko" radius={[0, 8, 8, 0]} name="Risiko Burnout (%)">
+              <Bar
+                dataKey="risiko"
+                radius={[0, 8, 8, 0]}
+                name="Risiko Burnout (%)"
+              >
                 {burnoutPerUnitData.map((_, index) => (
                   <Cell key={index} fill={burnoutBarColors[index]} />
                 ))}
