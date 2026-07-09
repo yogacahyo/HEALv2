@@ -1,26 +1,430 @@
 @import "tailwindcss";
 
+@theme {
+  /* ── Neon Clay Health Palette ── */
+  --color-primary: #106e00;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #39ff14;
+  --color-on-primary-container: #107100;
+  --color-inverse-primary: #2ae500;
+
+  --color-secondary: #5d5f5f;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #dfe0e0;
+  --color-on-secondary-container: #616363;
+
+  --color-tertiary: #5f5e5e;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #e0dddc;
+  --color-on-tertiary-container: #626161;
+
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+
+  --color-surface: #f6faf8;
+  --color-surface-dim: #d7dbd9;
+  --color-surface-bright: #f6faf8;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f0f4f2;
+  --color-surface-container: #ebefed;
+  --color-surface-container-high: #e5e9e7;
+  --color-surface-container-highest: #dfe3e1;
+  --color-on-surface: #181c1c;
+  --color-on-surface-variant: #3c4b35;
+  --color-inverse-surface: #2d3130;
+  --color-inverse-on-surface: #eef2f0;
+
+  --color-outline: #6b7c63;
+  --color-outline-variant: #baccb0;
+  --color-surface-tint: #106e00;
+  --color-surface-variant: #dfe3e1;
+
+  --color-neon: #39ff14;
+  --color-neon-dim: #2ae500;
+  --color-neon-dark: #095300;
+
+  /* Semantic helpers */
+  --color-risk-high: #e57373;
+  --color-risk-medium: #ffb74d;
+  --color-risk-low: #81c784;
+  --color-risk-high-bg: #fce8e8;
+  --color-risk-medium-bg: #fff3e0;
+  --color-risk-low-bg: #e8f5e9;
+
+  /* ── Typography ── */
+  --font-sans: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* ============================================================
+   Neon Clay Health — Claymorphism Design System
+   ============================================================ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Background & Surface */
+  --clay-bg: #f0f4f2;
+  --clay-surface: #ffffff;
+
+  /* ── Outer Shadows (2-layer system) ── */
+  --clay-shadow:
+    6px 6px 12px rgba(0, 0, 0, 0.07),
+    -3px -3px 8px rgba(255, 255, 255, 0.85);
+  --clay-shadow-hover:
+    8px 8px 16px rgba(0, 0, 0, 0.09),
+    -4px -4px 12px rgba(255, 255, 255, 0.95);
+  --clay-shadow-sm:
+    4px 4px 8px rgba(0, 0, 0, 0.05),
+    -2px -2px 6px rgba(255, 255, 255, 0.8);
+
+  /* ── Inner Shadows (The Clay 3D Effect) ── */
+  --clay-inner:
+    inset 2px 2px 4px rgba(255, 255, 255, 0.8),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.06);
+  --clay-inner-deep:
+    inset 3px 3px 6px rgba(255, 255, 255, 0.85),
+    inset -3px -3px 6px rgba(0, 0, 0, 0.08);
+
+  /* ── Inset (for inputs / wells) ── */
+  --clay-inset:
+    inset 2px 2px 5px rgba(0, 0, 0, 0.08),
+    inset -2px -2px 5px rgba(255, 255, 255, 0.7);
+
+  /* ── Green-tinted shadows for primary elements ── */
+  --clay-shadow-green:
+    4px 4px 10px rgba(16, 110, 0, 0.12),
+    -2px -2px 6px rgba(57, 255, 20, 0.15);
+  --clay-inner-green:
+    inset 2px 2px 4px rgba(57, 255, 20, 0.25),
+    inset -2px -2px 4px rgba(16, 110, 0, 0.1);
+
+  /* ── Border & Radius ── */
+  --clay-border: 1px solid rgba(0, 0, 0, 0.04);
+  --clay-radius: 1.5rem;
+  --clay-radius-sm: 1rem;
+  --clay-radius-xs: 0.75rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ── Base Body ── */
+body {
+  background-color: var(--clay-bg);
+  font-family: var(--font-sans);
+  color: #181c1c;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ============================================================
+   Clay Card (the core volumetric component)
+   ============================================================ */
+.clay-card {
+  background: var(--clay-surface);
+  border-radius: var(--clay-radius);
+  box-shadow: var(--clay-shadow), var(--clay-inner);
+  border: var(--clay-border);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.clay-card:hover {
+  box-shadow: var(--clay-shadow-hover), var(--clay-inner);
+}
+
+.clay-card-sm {
+  background: var(--clay-surface);
+  border-radius: var(--clay-radius-sm);
+  box-shadow: var(--clay-shadow-sm), var(--clay-inner);
+  border: var(--clay-border);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.clay-card-sm:hover {
+  box-shadow: var(--clay-shadow), var(--clay-inner);
+}
+
+/* Flat card (no inner shadow, for nested items) */
+.clay-card-flat {
+  background: var(--clay-surface);
+  border-radius: var(--clay-radius-sm);
+  box-shadow: var(--clay-shadow-sm);
+  border: var(--clay-border);
+  transition: box-shadow 0.25s ease;
+}
+
+/* ============================================================
+   Clay Button
+   ============================================================ */
+.clay-btn {
+  border-radius: var(--clay-radius-sm);
+  box-shadow: var(--clay-shadow-sm), var(--clay-inner);
+  border: var(--clay-border);
+  transition: all 0.2s ease;
+  min-height: 44px;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  cursor: pointer;
+}
+
+.clay-btn:hover {
+  box-shadow: var(--clay-shadow), var(--clay-inner);
+  transform: translateY(-1px);
+}
+
+.clay-btn:active {
+  box-shadow: var(--clay-inset);
+  transform: translateY(1px);
+}
+
+/* Primary button — neon green with green-tinted shadows */
+.clay-btn-primary {
+  background: #106e00;
+  color: #ffffff;
+  border-radius: var(--clay-radius-sm);
+  box-shadow: var(--clay-shadow-green), var(--clay-inner-green);
+  border: none;
+  transition: all 0.2s ease;
+  min-height: 44px;
+  font-weight: 700;
+  font-family: var(--font-sans);
+  cursor: pointer;
+}
+
+.clay-btn-primary:hover {
+  background: #095300;
+  box-shadow:
+    6px 6px 14px rgba(16, 110, 0, 0.18),
+    -3px -3px 8px rgba(57, 255, 20, 0.2),
+    var(--clay-inner-green);
+  transform: translateY(-1px);
+}
+
+.clay-btn-primary:active {
+  box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.2),
+    inset -2px -2px 6px rgba(57, 255, 20, 0.15);
+  transform: translateY(1px);
+}
+
+/* ============================================================
+   Clay Input (recessed "well" style)
+   ============================================================ */
+.clay-input {
+  border-radius: var(--clay-radius-xs);
+  box-shadow: var(--clay-inset);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: var(--clay-surface);
+  min-height: 44px;
+  font-family: var(--font-sans);
+  color: #181c1c;
+  transition: all 0.2s ease;
+}
+
+.clay-input:focus {
+  outline: none;
+  border-color: #39ff14;
+  box-shadow: var(--clay-inset), 0 0 0 3px rgba(57, 255, 20, 0.15);
+}
+
+.clay-input::placeholder {
+  color: #6b7c63;
+}
+
+/* ============================================================
+   Clay Badge (pill shape with subtle clay shadow)
+   ============================================================ */
+.clay-badge {
+  border-radius: 9999px;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.05),
+    inset 1px 1px 2px rgba(255, 255, 255, 0.6);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--font-sans);
+}
+
+/* Simulation badge */
+.sim-badge {
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  color: #1b5e20;
+  border: 1px solid rgba(46, 125, 50, 0.2);
+}
+
+/* ============================================================
+   Clay Icon Tray (circular container for icons inside cards)
+   ============================================================ */
+.clay-icon-tray {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    inset 2px 2px 4px rgba(255, 255, 255, 0.7),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.04),
+    2px 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+/* ============================================================
+   KPI Grid (responsive)
+   ============================================================ */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@media (min-width: 1024px) {
+  .kpi-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .kpi-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ============================================================
+   Table responsive
+   ============================================================ */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-responsive::-webkit-scrollbar {
+  height: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: #ebefed;
+  border-radius: 3px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #baccb0;
+  border-radius: 3px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: #6b7c63;
+}
+
+/* ============================================================
+   Chart container
+   ============================================================ */
+.chart-container {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* ============================================================
+   Bottom navigation safe area
+   ============================================================ */
+.bottom-nav-safe {
+  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+}
+
+/* ============================================================
+   Sidebar transition
+   ============================================================ */
+.sidebar-transition {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* ============================================================
+   Progress ring
+   ============================================================ */
+.progress-ring {
+  transition: stroke-dashoffset 0.5s ease;
+}
+
+/* ============================================================
+   Mobile scrollbar hide
+   ============================================================ */
+@media (max-width: 768px) {
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ============================================================
+   Animations
+   ============================================================ */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s ease forwards;
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2s ease-in-out infinite;
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(57, 255, 20, 0.3); }
+  50% { box-shadow: 0 0 16px rgba(57, 255, 20, 0.5); }
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+/* ============================================================
+   Recharts — Flowbite-inspired chart tooltip
+   ============================================================ */
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background: #ffffff !important;
+  border: none !important;
+  border-radius: 1rem !important;
+  box-shadow:
+    4px 4px 10px rgba(0, 0, 0, 0.08),
+    -2px -2px 6px rgba(255, 255, 255, 0.8),
+    inset 1px 1px 2px rgba(255, 255, 255, 0.6) !important;
+  padding: 0.75rem 1rem !important;
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+}
+
+.recharts-tooltip-wrapper .recharts-default-tooltip .recharts-tooltip-label {
+  color: #181c1c !important;
+  font-weight: 700 !important;
+  font-size: 0.8125rem !important;
+  margin-bottom: 0.25rem !important;
+}
+
+.recharts-tooltip-wrapper .recharts-default-tooltip .recharts-tooltip-item {
+  color: #3c4b35 !important;
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
 }
