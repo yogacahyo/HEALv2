@@ -207,8 +207,8 @@ export default function TenagaMedisPage() {
   };
 
   const tabs: { id: Tab; label: string; icon: React.ElementType }[] = [
-    { id: "schedule", label: "Jadwal", icon: Calendar },
     { id: "attendance", label: "Absensi", icon: ClipboardCheck },
+    { id: "schedule", label: "Jadwal", icon: Calendar },
     { id: "history", label: "Riwayat", icon: History },
     { id: "swap", label: "Shift Swap", icon: ArrowLeftRight },
   ];
@@ -502,23 +502,7 @@ export default function TenagaMedisPage() {
               )}
             </div>
 
-            {/* Today SIMRS attendance */}
-            {todayAtt && (
-              <div className="clay-card-sm p-4">
-                <p className="text-xs text-outline mb-2">
-                  Data Absensi SIMRS Hari Ini
-                </p>
-                <div className="flex items-center justify-between">
-                  <StatusBadge
-                    status={getAttendanceStatusLabel(todayAtt.status)}
-                  />
-                  <span className="text-xs text-on-surface-variant">
-                    {formatTime(todayAtt.check_in)} -{" "}
-                    {formatTime(todayAtt.check_out)}
-                  </span>
-                </div>
-              </div>
-            )}
+
           </div>
         )}
 
