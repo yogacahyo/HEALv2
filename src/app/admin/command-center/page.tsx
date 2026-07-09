@@ -1,88 +1,133 @@
-'use client';
+"use client";
 
-import { useSIMRSDatasetStore } from '@/context/useSIMRSDatasetStore';
-import { KPICard } from '@/components/common/KPICard';
-import { SectionHeader } from '@/components/common/SectionHeader';
-import { StatusBadge } from '@/components/common/StatusBadge';
-import { ResponsiveChartCard } from '@/components/common/ResponsiveChartCard';
+import { KPICard } from "@/components/common/KPICard";
+import { SectionHeader } from "@/components/common/SectionHeader";
+import { StatusBadge } from "@/components/common/StatusBadge";
+import { ResponsiveChartCard } from "@/components/common/ResponsiveChartCard";
 import {
-  Users, UserCheck, UserX, Bed, Activity, AlertTriangle, Clock, Stethoscope,
-  ClipboardList, BarChart3, Shield, Database, ArrowLeftRight,
-  TrendingUp, HeartPulse,
-} from 'lucide-react';
+  AlertTriangle,
+  Activity,
+  Users,
+  TrendingUp,
+  Brain,
+  Lightbulb,
+  Sparkles,
+} from "lucide-react";
 import {
-  calculateBOR, calculateCapacityUtilization, calculatePatientToStaffRatio,
-  generateSmartActions, getDoctors, getNurses, getMedicalStaff,
-} from '@/lib/simrs-calculations';
-import { formatPercentage, getToday } from '@/lib/formatters';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, RadialBarChart, RadialBar, Legend, CartesianGrid } from 'recharts';
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  Legend,
+  Cell,
+} from "recharts";
 
-const CHART_COLORS = ['#106e00', '#2ae500', '#39ff14', '#81c784', '#6b7c63', '#baccb0'];
+// Data dummy Risiko Burnout per Unit (B)
+const burnoutPerUnitData = [
+  { unit: "IGD", risiko: 86 },
+  { unit: "ICU/NICU/PICU", risiko: 82 },
+  { unit: "Kamar Operasi", risiko: 74 },
+  { unit: "Ruang Bersalin", risiko: 71 },
+  { unit: "Isolasi/Onkologi", risiko: 68 },
+];
+
+const burnoutBarColors = ["#c62828", "#e57373", "#ffb74d", "#ffb74d", "#81c784"];
+
+// Data dummy Beban Kerja per Shift (C)
+const bebanKerjaData = [
+  { unit: "IGD", Pagi: 78, Sore: 84, Malam: 92 },
+  { unit: "ICU/NICU/PICU", Pagi: 75, Sore: 80, Malam: 88 },
+  { unit: "Kamar Operasi", Pagi: 86, Sore: 72, Malam: 58 },
+  { unit: "Ruang Bersalin", Pagi: 66, Sore: 74, Malam: 85 },
+  { unit: "Isolasi/Onkologi", Pagi: 70, Sore: 69, Malam: 73 },
+];
+
+// Data dummy Heatmap Risiko Kelelahan (D)
+const heatmapData: { hari: string; Pagi: number; Sore: number; Malam: number }[] = [
+  { hari: "Senin", Pagi: 2, Sore: 2, Malam: 3 },
+  { hari: "Selasa", Pagi: 1, Sore: 2, Malam: 3 },
+  { hari: "Rabu", Pagi: 2, Sore: 3, Malam: 4 },
+  { hari: "Kamis", Pagi: 1, Sore: 2, Malam: 3 },
+  { hari: "Jumat", Pagi: 2, Sore: 3, Malam: 4 },
+  { hari: "Sabtu", Pagi: 3, Sore: 3, Malam: 4 },
+  { hari: "Minggu", Pagi: 3, Sore: 4, Malam: 4 },
+];
+
+const risikoLabel: Record<number, string> = {
+  1: "Rendah",
+  2: "Sedang",
+  3: "Tinggi",
+  4: "Kritis",
+};
+
+const risikoColor: Record<number, string> = {
+  1: "#e8f5e9",
+  2: "#fff8e1",
+  3: "#fff3e0",
+  4: "#fce8e8",
+};
+
+const risikoTextColor: Record<number, string> = {
+  1: "#106e00",
+  2: "#f57f17",
+  3: "#e65100",
+  4: "#c62828",
+};
+
+// Data Insight AI (H)
+const aiInsights = [
+  {
+    id: 1,
+    text: "IGD menjadi unit dengan risiko burnout tertinggi karena kombinasi lonjakan pasien malam, shift beruntun, dan kebutuhan respons cepat.",
+    severity: "high" as const,
+  },
+  {
+    id: 2,
+    text: "ICU / NICU / PICU membutuhkan pengendalian lembur yang lebih ketat karena tingginya tuntutan monitoring pasien kritis.",
+    severity: "high" as const,
+  },
+  {
+    id: 3,
+    text: "Kamar Operasi perlu pengaturan jadwal elektif yang lebih seimbang agar durasi kerja panjang tidak menumpuk pada tim yang sama.",
+    severity: "medium" as const,
+  },
+  {
+    id: 4,
+    text: "Ruang Bersalin membutuhkan sistem on-call yang lebih terstruktur untuk mengurangi kecemasan staf saat hari libur.",
+    severity: "medium" as const,
+  },
+  {
+    id: 5,
+    text: "Isolasi / Onkologi membutuhkan rotasi berkala untuk menurunkan compassion fatigue pada perawat.",
+    severity: "low" as const,
+  },
+];
+
+const tooltipStyle = {
+  borderRadius: "16px",
+  border: "none",
+  boxShadow:
+    "4px 4px 10px rgba(0,0,0,0.08), -2px -2px 6px rgba(255,255,255,0.8), inset 1px 1px 2px rgba(255,255,255,0.6)",
+  fontFamily: "Plus Jakarta Sans",
+};
 
 export default function CommandCenterPage() {
-  const { state } = useSIMRSDatasetStore();
-  const today = getToday();
-
-  // KPI Calculations from active dataset
-  const todayRegs = state.activeRegistration.filter((r) => r.registration_date.startsWith(today));
-  const activeRegs = state.activeRegistration.filter((r) => r.status === 'Active');
-  const todayAppts = state.activeAppointments.filter((a) => a.appointment_date === today);
-  const activeQueues = state.activeQueueNumbers.filter((q) => q.status === 'Waiting' || q.status === 'Called');
-  const emergencyQueues = state.activeQueueNumbers.filter((q) => q.priority === 'Emergency' && q.status === 'Waiting');
-  const bor = calculateBOR(state.activeRooms);
-  const doctors = getDoctors(state.activeEmployees, state.activePositions);
-  const nurses = getNurses(state.activeEmployees, state.activePositions);
-  const medicalStaff = getMedicalStaff(state.activeEmployees, state.activePositions);
-  const todayAttendance = state.activeAttendance.filter((a) => a.date === today);
-  const presentStaff = todayAttendance.filter((a) => a.status === 'Present' || a.status === 'Late');
-  const absentStaff = state.activeEmployees.length - presentStaff.length;
-  const avgUtilization = state.activeDoctorQueueQuotas.length > 0
-    ? state.activeDoctorQueueQuotas.reduce((sum, q) => sum + calculateCapacityUtilization(q), 0) / state.activeDoctorQueueQuotas.length
-    : 0;
-  const patientDoctorRatio = calculatePatientToStaffRatio(todayRegs.length, doctors.filter((d) => d.status === 'Active').length);
-
-  // Smart Actions
-  const smartActions = generateSmartActions({
-    queues: state.activeQueueNumbers,
-    quotas: state.activeDoctorQueueQuotas,
-    rooms: state.activeRooms,
-    attendance: state.activeAttendance,
-    registrations: state.activeRegistration,
-    params: state.simulationParameters,
-  });
-
-  // Chart data
-  const regTypeData = ['Rawat Jalan', 'Rawat Inap', 'Gawat Darurat', 'Penunjang'].map((type, index) => ({
-    name: type,
-    value: state.activeRegistration.filter((r) => r.registration_type === type).length,
-    fill: CHART_COLORS[index % CHART_COLORS.length],
-  }));
-
-  const queueStatusData = ['Waiting', 'Called', 'Served', 'Cancelled'].map((status) => ({
-    name: status,
-    value: state.activeQueueNumbers.filter((q) => q.status === status).length,
-  }));
-
-  const tooltipStyle = {
-    borderRadius: '16px',
-    border: 'none',
-    boxShadow: '4px 4px 10px rgba(0,0,0,0.08), -2px -2px 6px rgba(255,255,255,0.8), inset 1px 1px 2px rgba(255,255,255,0.6)',
-    fontFamily: 'Plus Jakarta Sans',
-  };
-
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <SectionHeader
           title="Command Center"
-          subtitle="Dashboard operasional berbasis database SIMRS aktif"
+          subtitle="Dashboard ringkasan eksekutif — pemantauan burnout dan efektivitas optimasi shift tenaga medis"
           simulationLabel="Simulation Mode"
         />
         <div className="flex items-center gap-2">
           <span className="clay-badge bg-[#e8f5e9] text-[#106e00] border border-[#a5d6a7] text-xs">
-            <Database className="w-3 h-3" />
-            {state.datasetSource === 'dummy' ? 'Dummy Dataset Loaded' : 'Uploaded SQL Dataset Active'}
+            <Brain className="w-3 h-3" />
+            AI Core Engine Aktif
           </span>
         </div>
       </div>
@@ -92,121 +137,278 @@ export default function CommandCenterPage() {
         <div className="flex flex-wrap items-center gap-3 text-xs">
           <div className="flex items-center gap-1.5 text-[#106e00] font-medium">
             <div className="w-2 h-2 rounded-full bg-neon animate-pulse-soft" />
-            Data Source: {state.datasetSource === 'dummy' ? 'Dummy SIMRS Dataset' : 'Uploaded Dataset'}
+            Sistem AI Shifting Aktif
           </div>
           <div className="text-outline-variant">|</div>
-          <div className="text-on-surface-variant">Tabel Aktif: {state.activePatients.length > 0 ? '30+' : '0'}</div>
+          <div className="text-on-surface-variant">
+            Unit Terpantau: 5 Unit Prioritas
+          </div>
           <div className="text-outline-variant">|</div>
-          <div className="text-on-surface-variant" suppressHydrationWarning>Update: {state.lastUpdated ? new Date(state.lastUpdated).toLocaleString('id-ID') : '-'}</div>
+          <div className="text-on-surface-variant">
+            Engine: Peramalan • Pelacak Kelelahan • Optimasi Jadwal
+          </div>
         </div>
       </div>
 
-      {/* KPI Grid */}
+      {/* KPI Grid (A) - Dashboard Ringkasan Eksekutif */}
       <div className="kpi-grid">
-        <KPICard title="Total Pasien Hari Ini" value={todayRegs.length} icon={Users} color="green" />
-        <KPICard title="Registrasi Aktif" value={activeRegs.length} icon={ClipboardList} color="blue" />
-        <KPICard title="Appointment Hari Ini" value={todayAppts.length} icon={Clock} color="cyan" />
-        <KPICard title="Antrean Aktif" value={activeQueues.length} icon={Users} color="amber" />
-        <KPICard title="Emergency Queue" value={emergencyQueues.length} icon={AlertTriangle} color="rose" />
-        <KPICard title="BOR Simulation" value={formatPercentage(bor)} icon={Bed} color={bor > 0.85 ? 'rose' : 'green'} />
-        <KPICard title="Dokter Aktif" value={doctors.filter((d) => d.status === 'Active').length} icon={Stethoscope} color="blue" />
-        <KPICard title="Perawat Aktif" value={nurses.filter((n) => n.status === 'Active').length} icon={HeartPulse} color="green" />
-        <KPICard title="Tenaga Medis Aktif" value={medicalStaff.filter((m) => m.status === 'Active').length} icon={UserCheck} color="green" />
-        <KPICard title="Pegawai Hadir" value={presentStaff.length} icon={UserCheck} color="green" />
-        <KPICard title="Pegawai Absent" value={absentStaff} icon={UserX} color={absentStaff > 3 ? 'rose' : 'slate'} />
-        <KPICard title="Doctor Utilization" value={formatPercentage(avgUtilization)} icon={BarChart3} color={avgUtilization > 0.85 ? 'rose' : 'blue'} />
-        <KPICard title="Patient:Doctor Ratio" value={`${patientDoctorRatio}:1`} icon={Activity} color="indigo" />
-        <KPICard title="Burnout Risk (Sim.)" value={`${state.burnoutAssessments.filter((b) => b.burnout_category === 'Tinggi').length} tinggi`} icon={AlertTriangle} color="amber" />
-        <KPICard title="Shift Swap Aktif" value={state.shiftSwapRequests.filter((s) => s.status === 'Menunggu Persetujuan').length} icon={ArrowLeftRight} color="blue" />
+        <KPICard
+          title="Rata-rata Risiko Burnout"
+          value="64%"
+          subtitle="Risiko burnout gabungan dokter dan perawat pada unit prioritas"
+          icon={AlertTriangle}
+          color="amber"
+        />
+        <KPICard
+          title="Unit Risiko Tertinggi"
+          value="IGD"
+          subtitle="Unit dengan kombinasi beban kerja, stres, dan shift malam tertinggi"
+          icon={Activity}
+          color="rose"
+        />
+        <KPICard
+          title="Staf Membutuhkan Istirahat"
+          value="28 orang"
+          subtitle="Staf dengan skor kelelahan tinggi atau jadwal kerja berisiko"
+          icon={Users}
+          color="rose"
+        />
+        <KPICard
+          title="Efektivitas Optimasi Jadwal"
+          value="82%"
+          subtitle="Tingkat keberhasilan AI dalam menurunkan konflik shift dan beban berlebih"
+          icon={TrendingUp}
+          color="green"
+        />
       </div>
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <ResponsiveChartCard title="Distribusi Tipe Registrasi" subtitle="Generated from active SIMRS dataset">
+        {/* (B) Grafik Risiko Burnout per Unit */}
+        <ResponsiveChartCard
+          title="Risiko Burnout Berdasarkan Unit Prioritas"
+          subtitle="Grafik ini menunjukkan tingkat risiko burnout berdasarkan kombinasi beban pasien, intensitas shift malam, lembur, dan skor kesejahteraan staf."
+        >
           <ResponsiveContainer width="100%" height="100%">
-            <RadialBarChart cx="50%" cy="50%" innerRadius="25%" outerRadius="90%" barSize={12} data={regTypeData} startAngle={90} endAngle={-270}>
-              <RadialBar
-                background={{ fill: '#ebefed' }}
-                dataKey="value"
-                cornerRadius={99}
+            <BarChart
+              data={burnoutPerUnitData}
+              layout="vertical"
+              margin={{ top: 0, right: 20, left: 0, bottom: 0 }}
+            >
+              <CartesianGrid
+                strokeDasharray="3 3"
+                horizontal={false}
+                stroke="#ebefed"
               />
-              <Legend iconType="circle" iconSize={10} layout="horizontal" verticalAlign="bottom" wrapperStyle={{ fontSize: '12px', color: '#6b7c63', paddingTop: '10px' }} />
-              <Tooltip 
-                cursor={{ fill: 'transparent' }}
-                content={({ active, payload }) => {
-                  if (active && payload && payload.length) {
-                    return (
-                      <div style={tooltipStyle} className="bg-white p-3">
-                        <p className="text-[#181c1c] font-bold text-[13px] mb-1">{payload[0].payload.name}</p>
-                        <p className="text-[#3c4b35] text-[12px] font-medium">Jumlah: {payload[0].value}</p>
-                      </div>
-                    );
-                  }
-                  return null;
-                }} 
+              <XAxis
+                type="number"
+                domain={[0, 100]}
+                tick={{ fontSize: 11, fill: "#6b7c63" }}
+                axisLine={false}
+                tickLine={false}
+                unit="%"
               />
-            </RadialBarChart>
+              <YAxis
+                dataKey="unit"
+                type="category"
+                tick={{ fontSize: 11, fill: "#6b7c63" }}
+                axisLine={false}
+                tickLine={false}
+                width={110}
+              />
+              <Tooltip
+                contentStyle={tooltipStyle}
+                cursor={{ fill: "#f6faf8" }}
+                formatter={(value: any) => [`${value}%`, "Risiko Burnout"]}
+              />
+              <Bar dataKey="risiko" radius={[0, 8, 8, 0]} name="Risiko Burnout (%)">
+                {burnoutPerUnitData.map((_, index) => (
+                  <Cell key={index} fill={burnoutBarColors[index]} />
+                ))}
+              </Bar>
+            </BarChart>
           </ResponsiveContainer>
         </ResponsiveChartCard>
 
-        <ResponsiveChartCard title="Status Antrean" subtitle="Generated from active SIMRS dataset">
+        {/* (C) Distribusi Beban Kerja per Shift */}
+        <ResponsiveChartCard
+          title="Distribusi Beban Kerja per Shift"
+          subtitle="Visualisasi ini membantu mengidentifikasi unit dan waktu kerja dengan tekanan operasional tertinggi."
+        >
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={queueStatusData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
-              <defs>
-                <linearGradient id="colorQueue" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#39ff14" stopOpacity={1}/>
-                  <stop offset="100%" stopColor="#106e00" stopOpacity={0.7}/>
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ebefed" />
-              <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#6b7c63' }} axisLine={false} tickLine={false} dy={10} />
-              <YAxis tick={{ fontSize: 11, fill: '#6b7c63' }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={tooltipStyle} cursor={{ fill: '#f6faf8' }} />
-              <Bar dataKey="value" fill="url(#colorQueue)" radius={[8, 8, 0, 0]} />
+            <BarChart
+              data={bebanKerjaData}
+              margin={{ top: 10, right: 0, left: -20, bottom: 0 }}
+            >
+              <CartesianGrid
+                strokeDasharray="3 3"
+                vertical={false}
+                stroke="#ebefed"
+              />
+              <XAxis
+                dataKey="unit"
+                tick={{ fontSize: 10, fill: "#6b7c63" }}
+                axisLine={false}
+                tickLine={false}
+                dy={10}
+              />
+              <YAxis
+                tick={{ fontSize: 11, fill: "#6b7c63" }}
+                axisLine={false}
+                tickLine={false}
+                domain={[0, 100]}
+              />
+              <Tooltip
+                contentStyle={tooltipStyle}
+                cursor={{ fill: "#f6faf8" }}
+              />
+              <Legend
+                iconType="circle"
+                wrapperStyle={{ fontSize: "12px", paddingTop: "10px" }}
+              />
+              <Bar
+                dataKey="Pagi"
+                fill="#ffb300"
+                radius={[4, 4, 0, 0]}
+                name="Shift Pagi"
+              />
+              <Bar
+                dataKey="Sore"
+                fill="#e65100"
+                radius={[4, 4, 0, 0]}
+                name="Shift Sore"
+              />
+              <Bar
+                dataKey="Malam"
+                fill="#283593"
+                radius={[4, 4, 0, 0]}
+                name="Shift Malam"
+              />
             </BarChart>
           </ResponsiveContainer>
         </ResponsiveChartCard>
       </div>
 
-      {/* Smart Action Center */}
+      {/* (D) Heatmap Risiko Kelelahan */}
       <div>
-        <SectionHeader title="Smart Action Center" simulationLabel="Rule-based Simulation" subtitle="Tindakan prioritas berdasarkan analisis database SIMRS" />
-        {smartActions.length === 0 ? (
-          <div className="clay-card-sm p-6 text-center">
-            <div className="clay-icon-tray bg-[#e8f5e9] mx-auto mb-2">
-              <Shield className="w-5 h-5 text-[#2ae500]" />
-            </div>
-            <p className="text-sm text-on-surface-variant">Tidak ada tindakan prioritas tinggi. Dataset SIMRS saat ini berada dalam batas simulasi aman.</p>
+        <SectionHeader
+          title="Peta Risiko Kelelahan Berdasarkan Hari dan Shift"
+          subtitle="Heatmap ini menampilkan pola kelelahan tenaga medis berdasarkan akumulasi shift dan intensitas kerja mingguan."
+        />
+        <div className="clay-card-sm overflow-hidden">
+          <div className="table-responsive">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-surface-container border-b border-surface-container-high">
+                  <th className="text-left p-3 font-semibold text-on-surface-variant text-xs w-24">
+                    Hari
+                  </th>
+                  <th className="text-center p-3 font-semibold text-on-surface-variant text-xs">
+                    Shift Pagi
+                  </th>
+                  <th className="text-center p-3 font-semibold text-on-surface-variant text-xs">
+                    Shift Sore
+                  </th>
+                  <th className="text-center p-3 font-semibold text-on-surface-variant text-xs">
+                    Shift Malam
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {heatmapData.map((row) => (
+                  <tr
+                    key={row.hari}
+                    className="border-b border-surface-container"
+                  >
+                    <td className="p-3 text-xs font-medium text-on-surface">
+                      {row.hari}
+                    </td>
+                    {(["Pagi", "Sore", "Malam"] as const).map((shift) => {
+                      const level = row[shift];
+                      return (
+                        <td key={shift} className="p-2 text-center">
+                          <div
+                            className="rounded-xl py-2 px-3 text-xs font-semibold mx-auto max-w-[120px]"
+                            style={{
+                              backgroundColor: risikoColor[level],
+                              color: risikoTextColor[level],
+                            }}
+                          >
+                            {risikoLabel[level]}
+                          </div>
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        ) : (
-          <div className="space-y-3">
-            {smartActions.map((action) => (
-              <div key={action.id} className={`clay-card-sm p-4 border-l-4 ${
-                action.severity === 'high' ? 'border-l-[#e57373]' : action.severity === 'medium' ? 'border-l-[#ffb74d]' : 'border-l-[#81c784]'
-              }`}>
-                <div className="flex flex-wrap items-start justify-between gap-2 mb-1">
-                  <h4 className="text-sm font-bold text-on-surface">{action.title}</h4>
-                  <StatusBadge status={action.severity === 'high' ? 'Tinggi' : action.severity === 'medium' ? 'Sedang' : 'Rendah'} />
+          {/* Legenda Heatmap */}
+          <div className="p-4 border-t border-surface-container-high">
+            <div className="flex flex-wrap gap-4 text-xs">
+              {[1, 2, 3, 4].map((level) => (
+                <div key={level} className="flex items-center gap-1.5">
+                  <div
+                    className="w-4 h-4 rounded"
+                    style={{ backgroundColor: risikoColor[level] }}
+                  />
+                  <span style={{ color: risikoTextColor[level] }}>
+                    {risikoLabel[level]}
+                  </span>
                 </div>
-                <p className="text-xs sm:text-sm text-on-surface-variant">{action.description}</p>
-                <p className="text-[10px] text-outline mt-1">Sumber: {action.source}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        )}
+        </div>
       </div>
 
-      {/* Room Status */}
+      {/* (H) AI Insight Center */}
       <div>
-        <SectionHeader title="Status Kamar" subtitle="Data dari tabel rooms" />
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-          {state.activeRooms.map((room) => (
-            <div key={room.room_id} className="clay-card-sm p-3">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-bold text-on-surface">{room.room_number}</span>
-                <StatusBadge status={room.status} />
+        <SectionHeader
+          title="Insight Otomatis Berbasis AI"
+          subtitle="Analisis cerdas dari tiga AI Core Engine terhadap kondisi terkini unit prioritas"
+        />
+        <div className="space-y-3">
+          {aiInsights.map((insight) => (
+            <div
+              key={insight.id}
+              className={`clay-card-sm p-4 border-l-4 ${
+                insight.severity === "high"
+                  ? "border-l-[#e57373]"
+                  : insight.severity === "medium"
+                    ? "border-l-[#ffb74d]"
+                    : "border-l-[#81c784]"
+              }`}
+            >
+              <div className="flex flex-wrap items-start justify-between gap-2 mb-1">
+                <div className="flex items-start gap-2 flex-1">
+                  <Lightbulb
+                    className={`w-4 h-4 mt-0.5 shrink-0 ${
+                      insight.severity === "high"
+                        ? "text-[#e57373]"
+                        : insight.severity === "medium"
+                          ? "text-[#ffb74d]"
+                          : "text-[#81c784]"
+                    }`}
+                  />
+                  <p className="text-xs sm:text-sm text-on-surface-variant leading-relaxed">
+                    {insight.text}
+                  </p>
+                </div>
+                <StatusBadge
+                  status={
+                    insight.severity === "high"
+                      ? "Tinggi"
+                      : insight.severity === "medium"
+                        ? "Sedang"
+                        : "Rendah"
+                  }
+                />
               </div>
-              <p className="text-xs text-on-surface-variant">{room.room_type} • Lt. {room.floor}</p>
+              <p className="text-[10px] text-outline mt-1 ml-6">
+                Sumber: AI Core Engine — Analisis Otomatis
+              </p>
             </div>
           ))}
         </div>
@@ -214,8 +416,9 @@ export default function CommandCenterPage() {
 
       {/* Footer notice */}
       <p className="text-xs text-outline text-center py-4">
-        Data yang ditampilkan merupakan dataset dummy/simulasi berdasarkan struktur database SIMRS. 
-        Implementasi produksi membutuhkan validasi keamanan, audit akses, dan kepatuhan kebijakan rumah sakit.
+        Data yang ditampilkan merupakan dataset simulasi AI Shifting untuk
+        pemantauan burnout tenaga medis. Implementasi produksi membutuhkan
+        validasi keamanan, audit akses, dan kepatuhan kebijakan rumah sakit.
       </p>
     </div>
   );

@@ -1,60 +1,80 @@
 'use client';
 
 import Link from 'next/link';
-import { Home, Sparkles, Stethoscope, ShieldCheck, BarChart3, Database, BookOpen, ArrowRight } from 'lucide-react';
+import { Home, Stethoscope, ShieldCheck, BarChart3, Database, BookOpen, ArrowRight, Brain, Info, Workflow } from 'lucide-react';
 
 const sections = [
   {
-    title: '1. Beranda (Landing Page)',
-    content: 'Halaman awal dengan 5 tombol akses role: Tenaga Medis, Admin, Direktur, Tabel Data SIMRS, dan Panduan. Dari halaman ini, Anda dapat memilih role yang sesuai.',
+    title: '1. Beranda (Portal Utama)',
+    icon: Home,
+    content: 'Halaman utama (/) yang berfungsi sebagai gerbang masuk. Sistem ini menggunakan arsitektur role-based, di mana Anda memilih peran untuk masuk ke dashboard yang sesuai: Tenaga Medis, Admin, atau Direktur.',
   },
   {
-    title: '2. Menu Tenaga Medis',
-    icon: Stethoscope,
-    content: 'Dirancang mobile-first untuk dokter dan perawat. Memiliki 5 tab di navigation bar bawah:',
+    title: '2. Alur Kerja (User Flow) Tenaga Medis',
+    icon: Workflow,
+    content: 'Aplikasi mobile-first (/tenaga-medis) ini adalah pendamping harian dokter dan perawat. Berikut adalah alur penggunaannya:',
     items: [
-      { label: 'Jadwal', desc: 'Melihat jadwal praktik/shift bulan ini berdasarkan tabel doctor_schedules.' },
-      { label: 'Absensi', desc: 'Simulasi absen masuk dan keluar. Data dari tabel attendance.' },
-      { label: 'Burnout', desc: 'Asesmen burnout pasca-shift dengan 7 pertanyaan Ya/Tidak. Skor dihitung: (Ya/7)*100. Kategori: Rendah (<34), Sedang (34-66), Tinggi (>66).' },
-      { label: 'Riwayat', desc: 'Riwayat absensi dan asesmen burnout yang pernah diisi.' },
-      { label: 'Shift Swap', desc: 'Formulir pengajuan pergantian shift. Pilih tanggal/shift saat ini, tanggal/shift yang diinginkan, alasan, dan urgensi.' },
+      { label: 'Cek Jadwal', desc: 'Sebelum bekerja, tenaga medis membuka tab "Jadwal" untuk melihat kapan dan di unit mana mereka bertugas hari itu. Jadwal ini sudah dioptimasi oleh AI.' },
+      { label: 'Absensi', desc: 'Saat tiba di rumah sakit, buka tab "Absensi" dan lakukan absen masuk (clock-in). Saat shift selesai, lakukan absen keluar (clock-out).' },
+      { label: 'Asesmen Burnout', desc: 'Setelah absen keluar, tenaga medis WAJIB membuka tab "Burnout" untuk mengisi 7 pertanyaan singkat tentang kelelahan fisik dan mental pasca-shift. Skor ini langsung dikirim ke AI Engine.' },
+      { label: 'Tukar Shift (Opsional)', desc: 'Jika ada halangan, tenaga medis masuk ke tab "Shift Swap", memilih shift yang ingin ditukar, dan mengajukan alasan. Pengajuan ini akan masuk ke dashboard Admin untuk dievaluasi.' },
     ],
   },
   {
-    title: '3. Menu Admin',
+    title: '3. Alur Kerja (User Flow) Manajerial Admin',
+    icon: Workflow,
+    content: 'Dashboard Admin (/admin) digunakan oleh kepala perawat atau manajer operasional setiap hari dengan alur berikut:',
+    items: [
+      { label: 'Overview Harian', desc: 'Admin membuka "Command Center" setiap pagi untuk melihat rata-rata risiko burnout hari itu, serta membaca "AI Insight" otomatis tentang kondisi unit saat ini.' },
+      { label: 'Tindak Lanjut Kelelahan', desc: 'Jika Command Center menunjukkan ada staf yang butuh istirahat, Admin membuka "Burnout Radar". Di sini, Admin melihat tabel rekomendasi staf yang berisiko "Kritis/Tinggi" dan mengambil tindakan (misal: meliburkan staf tersebut).' },
+      { label: 'Persetujuan Shift', desc: 'Admin membuka "Shift Swap & Approval" untuk melihat apakah ada tenaga medis yang mengajukan tukar shift. AI akan memberikan indikator apakah pertukaran tersebut berisiko (misal: menyebabkan double-shift). Admin kemudian mengklik Approve atau Reject.' },
+      { label: 'Persiapan Masa Depan', desc: 'Secara berkala, Admin membuka "Clinical Load Forecast" untuk melihat prediksi beban pasien minggu depan, lalu membuka "Auto Rostering" untuk memastikan jadwal shift minggu depan sudah terdistribusi dengan adil.' },
+    ],
+  },
+  {
+    title: '4. Cara Kerja & Aliran Data AI Core Engine',
+    icon: Brain,
+    content: 'Bagaimana AI bekerja di belakang layar mengatur shift tenaga medis? Sistem HEALv2 menggunakan tiga AI Core Engine yang berjalan berurutan:',
+    items: [
+      { label: 'Engine A (Peramalan Beban)', desc: 'AI mengambil data historis dari database SIMRS (kunjungan pasien, operasi). Kemudian AI memprediksi: "Minggu depan, IGD akan kedatangan 30% lebih banyak pasien pada shift malam."' },
+      { label: 'Engine C (Pelacak Kelelahan)', desc: 'AI mengambil data dari menu Tenaga Medis (jam lembur absen, shift malam beruntun, dan hasil survei burnout). AI lalu menghitung skor kelelahan setiap individu, misalnya: "Ns. Rina memiliki skor burnout 84% (Kritis)."' },
+      { label: 'Engine B (Optimasi Jadwal)', desc: 'AI menggabungkan output Engine A dan Engine C. Karena IGD akan ramai (A) dan Ns. Rina sedang kelelahan (C), maka jadwal pintar (B) tidak akan menempatkan Ns. Rina di IGD pada shift malam minggu depan. Jadwal final ini lalu dikirim kembali ke HP Tenaga Medis.' },
+    ],
+  },
+  {
+    title: '5. Penjelasan Detail Halaman Admin',
     icon: ShieldCheck,
-    content: 'Dashboard operasional dengan 11 sub-halaman di sidebar kiri:',
+    content: 'Rincian menu yang tersedia di sidebar Admin:',
     items: [
-      { label: 'Command Center', desc: '15 KPI card, Smart Action Center (5 rules), chart distribusi, status kamar.' },
-      { label: 'SIMRS Data Hub', desc: 'Overview semua tabel dan jumlah record di active dataset.' },
-      { label: 'Patient Flow', desc: 'Aliran pasien: distribusi per departemen, tipe kunjungan, tabel registrasi.' },
-      { label: 'Data Tenaga Medis', desc: 'Daftar pegawai, role, posisi, absensi hari ini, pengajuan cuti.' },
-      { label: 'Jadwal & Antrean', desc: 'Jadwal dokter per hari, kuota harian, monitor antrean real-time.' },
-      { label: 'Shift Swap & Approval', desc: 'Kelola pengajuan shift dari tenaga medis: setujui, tolak, atau minta perbaikan.' },
-      { label: 'Burnout Radar', desc: 'Skor burnout per tenaga medis. Radar chart + bar chart. 5 faktor: kapasitas, terlambat, absent, emergency, malam.' },
-      { label: 'Clinical Load Forecast', desc: 'Prediksi 14 hari ke depan menggunakan moving average + emergency/appointment/follow-up factors.' },
-      { label: 'Auto Rostering', desc: 'Simulasi jadwal otomatis per bulan. Constraint: maks 2 malam beruntun, cuti, shift swap.' },
-      { label: 'Executive Insight', desc: 'Ringkasan eksekutif: BOR, risiko departemen, rekomendasi alokasi.' },
-      { label: 'Parameter Simulasi', desc: 'Konfigurasi threshold simulasi: kapasitas, BOR, emergency, burnout, dll.' },
+      { label: 'Command Center', desc: 'Dashboard operasional utama. Menampilkan KPI burnout, grafik risiko per unit, grafik beban per shift, dan heatmap kelelahan matriks hari/shift.' },
+      { label: 'Data Tenaga Medis SIMRS', desc: 'Daftar master data pegawai. Menampilkan identitas, profesi, unit, dan jam kerja saat ini.' },
+      { label: 'Jadwal & Antrean', desc: 'Tampilan live status antrean pasien per poliklinik dan kuota layanan harian dokter.' },
+      { label: 'Shift Swap & Approval', desc: 'Panel persetujuan untuk pengajuan tukar shift tenaga medis.' },
+      { label: 'Burnout Radar', desc: 'Visualisasi khusus Engine C. Menampilkan Radar Chart profil kelelahan unit dan tabel pemantauan staf risiko tinggi beserta rekomendasi AI.' },
+      { label: 'Clinical Load Forecast', desc: 'Visualisasi khusus Engine A. Menampilkan Area Chart prediksi lonjakan beban pasien selama 14 hari ke depan.' },
+      { label: 'Auto Rostering Simulation', desc: 'Visualisasi khusus Engine B. Menampilkan grafik perbandingan dampak sebelum vs sesudah optimasi jadwal, serta tabel rekomendasi strategis penjadwalan per unit.' },
     ],
   },
   {
-    title: '4. Menu Direktur',
+    title: '6. Halaman Direktur (Executive Dashboard)',
     icon: BarChart3,
-    content: 'Dashboard eksekutif minimalis dengan 8 KPI, chart prediksi 7 hari, rekomendasi strategis, dan status risiko keseluruhan. Data sama seperti admin namun dalam tampilan ringkas untuk pengambilan keputusan.',
+    content: 'Dashboard khusus jajaran direksi (/direktur). Alur penggunaannya adalah direktur membuka halaman ini sekali seminggu/sebulan untuk melihat Ringkasan Risiko Total, Tren Burnout Mingguan, dan membaca Rekomendasi Strategis level tinggi untuk pengambilan keputusan kebijakan RS.'
   },
   {
-    title: '5. Tabel Data SIMRS',
+    title: '7. Tabel Data SIMRS (Dokumentasi)',
     icon: Database,
-    content: 'Dokumentasi lengkap seluruh tabel database SIMRS. Fitur: pencarian tabel, filter berdasarkan penggunaan (Patient Load, Clinical Load, Staffing, Burnout, Executive), detail kolom per tabel, catatan privasi data.',
+    content: 'Halaman (/tabel-data-simrs) yang mensimulasikan struktur database asli rumah sakit. Menampilkan skema tabel (seperti patient_records, staff_schedules, attendance_logs) yang dikonsumsi oleh AI.'
   },
   {
-    title: '6. Keamanan & Privasi',
-    content: 'Jangan tampilkan data sensitif pasien pada dashboard AI Shifting: nama lengkap, alamat, telepon, email, emergency contact. Gunakan secure ID (patient_id, registration_number, medical_record_number). Data pasien hanya ditampilkan secara agregat.',
-  },
-  {
-    title: '7. Catatan Penting',
-    content: 'Website ini adalah prototype simulasi. Semua fitur prediksi, burnout, rostering, dan shift swap berlabel "Simulation Mode". Seluruh data berasal dari active SIMRS dataset (dummy atau uploaded). Untuk implementasi produksi, diperlukan validasi keamanan, audit akses, dan kepatuhan kebijakan rumah sakit.',
+    title: '8. Istilah & Singkatan Unit Medis',
+    icon: Info,
+    content: 'Sistem HEALv2 menggunakan singkatan unit standar rumah sakit:',
+    items: [
+      { label: 'IGD', desc: 'Instalasi Gawat Darurat — Unit pertama penerima pasien darurat. (Risiko burnout tertinggi).' },
+      { label: 'ICU / NICU / PICU', desc: 'Intensive Care Unit (Dewasa / Bayi / Anak) — Ruang perawatan kritis.' },
+      { label: 'OK', desc: 'Operatie Kamer — Kamar Operasi untuk tindakan pembedahan.' },
+      { label: 'VK', desc: 'Verlos Kamer — Ruang Bersalin khusus ibu hamil.' },
+    ],
   },
 ];
 
@@ -62,24 +82,24 @@ export default function PanduanPage() {
   return (
     <div className="min-h-screen">
       <header className="bg-gradient-to-r from-[#106e00] to-[#095300] text-white px-4 sm:px-8 py-6" style={{ boxShadow: '0 4px 16px rgba(16,110,0,0.3), inset 0 1px 0 rgba(57,255,20,0.15)' }}>
-        <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-4">
+        <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-1">
               <Link href="/" className="p-1.5 hover:bg-white/10 rounded-xl transition-colors">
                 <Home className="w-5 h-5" />
               </Link>
-              <h1 className="text-xl sm:text-2xl font-bold">Panduan Penggunaan</h1>
+              <h1 className="text-xl sm:text-2xl font-bold">Panduan Komprehensif & Alur Pengguna</h1>
             </div>
-            <p className="text-xs sm:text-sm opacity-80">Panduan lengkap penggunaan website HEAL untuk seluruh role</p>
+            <p className="text-xs sm:text-sm opacity-80">Dokumentasi mendalam tentang fungsi halaman, alur sistem (user flow), dan cara kerja AI</p>
           </div>
           <span className="clay-badge bg-white/20 text-white border border-white/30 text-xs">
             <BookOpen className="w-3 h-3" />
-            User Guide
+            Full Reference
           </span>
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-8 py-6 space-y-6">
+      <main className="max-w-5xl mx-auto px-4 sm:px-8 py-6 space-y-6">
         {sections.map((section, i) => (
           <div key={i} className="clay-card p-5 sm:p-6 animate-fade-in" style={{ animationDelay: `${i * 60}ms` }}>
             <div className="flex items-start gap-3 mb-3">
@@ -92,13 +112,13 @@ export default function PanduanPage() {
             </div>
             <p className="text-sm text-on-surface-variant leading-relaxed mb-3">{section.content}</p>
             {section.items && (
-              <div className="space-y-2 ml-3">
+              <div className="space-y-3 ml-3">
                 {section.items.map((item, j) => (
-                  <div key={j} className="flex items-start gap-2">
-                    <ArrowRight className="w-3.5 h-3.5 text-amber-400 mt-1 shrink-0" />
+                  <div key={j} className="flex items-start gap-3 p-3 rounded-xl bg-surface-container-low border border-surface-container">
+                    <ArrowRight className="w-4 h-4 text-[#ffb74d] mt-0.5 shrink-0" />
                     <div>
-                      <span className="text-sm font-semibold text-on-surface">{item.label}:</span>{' '}
-                      <span className="text-sm text-on-surface-variant">{item.desc}</span>
+                      <span className="text-sm font-bold text-on-surface block mb-1">{item.label}</span>
+                      <span className="text-sm text-on-surface-variant leading-relaxed">{item.desc}</span>
                     </div>
                   </div>
                 ))}
