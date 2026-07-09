@@ -111,11 +111,22 @@ export default function ShiftSwapApprovalPage() {
                     </button>
                   </h4>
 
-                  <div className="flex items-center gap-3 w-max bg-surface-container px-4 py-2.5 rounded-xl border border-surface-container-high">
-                    <span className="text-sm font-semibold text-on-surface">{req.current_shift} ({getDayStr(req.current_date)})</span>
-                    <ArrowLeftRight className="w-4 h-4 text-outline" />
-                    <span className="text-sm font-bold text-[#1565c0]">{req.requested_shift} ({getDayStr(req.requested_date)})</span>
-                  </div>
+                  {req.requested_shift === 'Cuti' ? (
+                    <div className="flex items-center gap-3 w-max bg-surface-container px-4 py-2.5 rounded-xl border border-surface-container-high">
+                      <span className="text-sm font-bold text-gray-700">Pengajuan Cuti</span>
+                      <span className="text-outline">|</span>
+                      <span className="text-sm font-semibold text-on-surface">
+                        {getDayStr(req.requested_date)}, {formatDateShort(req.requested_date)}
+                        {req.requested_end_date ? ` s.d. ${getDayStr(req.requested_end_date)}, ${formatDateShort(req.requested_end_date)}` : ''}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-3 w-max bg-surface-container px-4 py-2.5 rounded-xl border border-surface-container-high">
+                      <span className="text-sm font-semibold text-on-surface">{req.current_shift} ({getDayStr(req.current_date)})</span>
+                      <ArrowLeftRight className="w-4 h-4 text-outline" />
+                      <span className="text-sm font-bold text-[#1565c0]">{req.requested_shift} ({getDayStr(req.requested_date)})</span>
+                    </div>
+                  )}
 
                   <p className="text-sm text-on-surface-variant mt-2">
                     <span className="font-semibold text-on-surface-variant">Alasan:</span> {req.reason}

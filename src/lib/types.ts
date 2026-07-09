@@ -551,7 +551,7 @@ export interface Payment {
 // Simulation & Derived Types
 // ============================================================
 
-export type ShiftType = 'Pagi' | 'Sore' | 'Malam';
+export type ShiftType = 'Pagi' | 'Sore' | 'Malam' | 'Off' | 'Cuti';
 
 export interface ShiftSwapRequest {
   request_id: string;
@@ -562,6 +562,7 @@ export interface ShiftSwapRequest {
   current_date: string;
   current_shift: ShiftType;
   requested_date: string;
+  requested_end_date?: string; // Untuk Cuti rentang tanggal
   requested_shift: ShiftType;
   reason: string;
   urgency: 'Rendah' | 'Sedang' | 'Tinggi';

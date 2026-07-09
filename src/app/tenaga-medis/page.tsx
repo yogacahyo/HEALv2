@@ -146,6 +146,13 @@ export default function TenagaMedisPage() {
     urgency: "Sedang" as "Rendah" | "Sedang" | "Tinggi",
   });
 
+  const [cutiForm, setCutiForm] = useState({
+    requested_date: "",
+    requested_end_date: "",
+    reason: "",
+    urgency: "Sedang" as "Rendah" | "Sedang" | "Tinggi",
+  });
+
   const empShiftSwaps = state.shiftSwapRequests.filter(
     (r) => r.requester_id === String(selectedEmp?.employee_id),
   );
@@ -201,6 +208,31 @@ export default function TenagaMedisPage() {
       current_shift: "Pagi",
       requested_date: "",
       requested_shift: "Pagi",
+      reason: "",
+      urgency: "Sedang",
+    });
+  };
+
+  const handleCutiSubmit = () => {
+    if (!selectedEmp || !cutiForm.requested_date || !cutiForm.requested_end_date || !cutiForm.reason) return;
+    submitShiftSwapRequest({
+      requester_id: String(selectedEmp.employee_id),
+      requester_role: empPos?.position_name.toLowerCase().includes("doctor")
+        ? "dokter"
+        : "perawat",
+      requester_name: `${selectedEmp.first_name} ${selectedEmp.last_name}`,
+      department_name: empPos?.description || "",
+      current_date: cutiForm.requested_date,
+      current_shift: "Pagi", // Dummy untuk cuti
+      requested_date: cutiForm.requested_date,
+      requested_end_date: cutiForm.requested_end_date,
+      requested_shift: "Cuti",
+      reason: cutiForm.reason,
+      urgency: cutiForm.urgency,
+    });
+    setCutiForm({
+      requested_date: "",
+      requested_end_date: "",
       reason: "",
       urgency: "Sedang",
     });
@@ -795,6 +827,7 @@ export default function TenagaMedisPage() {
                     <option value="Pagi">Pagi</option>
                     <option value="Sore">Sore</option>
                     <option value="Malam">Malam</option>
+                    <option value="Off">Libur (Off)</option>
                   </select>
                 </div>
               </div>
@@ -834,6 +867,85 @@ export default function TenagaMedisPage() {
                 className="clay-btn w-full px-4 py-3 bg-[#1565c0] text-white text-sm font-semibold hover:bg-[#0d47a1] disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 <Send className="w-4 h-4" /> Ajukan Pergantian Shift
+              </button>
+            </div>
+
+            {/* Cuti Form */}
+            <div className="clay-card p-6 space-y-4">
+              <h3 className="text-lg font-bold text-on-surface mb-4 flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-gray-500" />
+                Pengajuan Cuti
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-on-surface-variant mb-1">
+                    Tanggal Mulai Cuti
+                  </label>
+                  <input
+                    type="date"
+                    value={cutiForm.requested_date}
+                    onChange={(e) =>
+                      setCutiForm((p) => ({
+                        ...p,
+                        requested_date: e.target.value,
+                      }))
+                    }
+                    className="clay-input w-full px-3 py-2 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-on-surface-variant mb-1">
+                    Tanggal Akhir Cuti
+                  </label>
+                  <input
+                    type="date"
+                    value={cutiForm.requested_end_date}
+                    onChange={(e) =>
+                      setCutiForm((p) => ({
+                        ...p,
+                        requested_end_date: e.target.value,
+                      }))
+                    }
+                    className="clay-input w-full px-3 py-2 text-sm"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-on-surface-variant mb-1">
+                  Alasan
+                </label>
+                <textarea
+                  value={cutiForm.reason}
+                  onChange={(e) =>
+                    setCutiForm((p) => ({ ...p, reason: e.target.value }))
+                  }
+                  className="clay-input w-full px-3 py-2 text-sm resize-none"
+                  rows={3}
+                  placeholder="Jelaskan alasan pengajuan cuti..."
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-on-surface-variant mb-1">
+                  Urgensi
+                </label>
+                <div className="flex gap-2">
+                  {(["Rendah", "Sedang", "Tinggi"] as const).map((u) => (
+                    <button
+                      key={u}
+                      onClick={() => setCutiForm((p) => ({ ...p, urgency: u }))}
+                      className={`clay-btn px-3 py-2 text-xs font-medium ${cutiForm.urgency === u ? "bg-[#e8f5e9] text-[#106e00] border-[#a5d6a7]" : "bg-white text-on-surface-variant"}`}
+                    >
+                      {u}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <button
+                onClick={handleCutiSubmit}
+                disabled={!cutiForm.requested_date || !cutiForm.requested_end_date || !cutiForm.reason}
+                className="clay-btn w-full px-4 py-3 bg-gray-600 text-white text-sm font-semibold hover:bg-gray-700 disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                <Send className="w-4 h-4" /> Ajukan Cuti
               </button>
             </div>
 
