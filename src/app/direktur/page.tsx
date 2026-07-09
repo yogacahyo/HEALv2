@@ -72,7 +72,6 @@ export default function DirekturPage() {
               <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">Dashboard Direktur</h1>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold bg-[#39ff14] text-[#107100] px-2 py-0.5 rounded-full">Ringkasan eksekutif</span>
               <p className="text-xs sm:text-sm opacity-80">AI Shifting — Pemantauan Burnout Tenaga Medis</p>
             </div>
           </div>
