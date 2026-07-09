@@ -81,7 +81,7 @@ export default function TenagaMedisPage() {
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loginForm, setLoginForm] = useState({
-    username: "Ns. Budi",
+    username: "Rina Susanti",
     password: "password",
   });
 
@@ -501,8 +501,6 @@ export default function TenagaMedisPage() {
                 </div>
               )}
             </div>
-
-
           </div>
         )}
 
