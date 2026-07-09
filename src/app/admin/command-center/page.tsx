@@ -137,24 +137,6 @@ export default function CommandCenterPage() {
         />
       </div>
 
-      {/* Data Integration Status */}
-      <div className="clay-card-sm p-4">
-        <div className="flex flex-wrap items-center gap-3 text-xs">
-          <div className="flex items-center gap-1.5 text-[#106e00] font-medium">
-            <div className="w-2 h-2 rounded-full bg-neon animate-pulse-soft" />
-            Sistem AI Shifting Aktif
-          </div>
-          <div className="text-outline-variant">|</div>
-          <div className="text-on-surface-variant">
-            Unit Terpantau: 5 Unit Prioritas
-          </div>
-          <div className="text-outline-variant">|</div>
-          <div className="text-on-surface-variant">
-            Engine: Peramalan • Pelacak Kelelahan • Optimasi Jadwal
-          </div>
-        </div>
-      </div>
-
       {/* KPI Grid (A) - Dashboard Ringkasan Eksekutif */}
       <div className="kpi-grid">
         <KPICard
@@ -179,11 +161,11 @@ export default function CommandCenterPage() {
           color="rose"
         />
         <KPICard
-          title="Efektivitas Optimasi Jadwal"
-          value="82%"
-          subtitle="Tingkat keberhasilan AI dalam menurunkan konflik shift dan beban berlebih"
+          title="Prediksi Puncak Beban"
+          value="168 pasien"
+          subtitle="Lonjakan beban kerja klinis yang diprediksi terjadi pada 16 Jul"
           icon={TrendingUp}
-          color="green"
+          color="rose"
         />
       </div>
 

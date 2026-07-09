@@ -164,36 +164,13 @@ const staffMonitoring = [
   },
 ];
 
-// ─── Data detail modal: Optimasi Sebelum/Sesudah ───
-const optimasiData = [
-  {
-    indikator: "Double-Shift",
-    indikatorFull: "Risiko Double-Shift",
-    Sebelum: 38,
-    Sesudah: 14,
-    satuan: "%",
-  },
-  {
-    indikator: "Beban Kerja",
-    indikatorFull: "Beban Tidak Merata",
-    Sebelum: 46,
-    Sesudah: 21,
-    satuan: "%",
-  },
-  {
-    indikator: "Burnout Tinggi",
-    indikatorFull: "Staf Burnout Tinggi",
-    Sebelum: 34,
-    Sesudah: 18,
-    satuan: "orang",
-  },
-  {
-    indikator: "Konflik Jadwal",
-    indikatorFull: "Konflik Jadwal",
-    Sebelum: 41,
-    Sesudah: 17,
-    satuan: "kasus",
-  },
+// ─── Data detail modal: Prediksi Puncak Beban ───
+const puncakBebanData = [
+  { unit: "IGD", pasien: 62, warna: "#e57373" },
+  { unit: "ICU / NICU / PICU", pasien: 38, warna: "#42a5f5" },
+  { unit: "Ruang Bersalin", pasien: 32, warna: "#283593" },
+  { unit: "Isolasi / Onkologi", pasien: 20, warna: "#106e00" },
+  { unit: "Kamar Operasi", pasien: 16, warna: "#ffb300" },
 ];
 
 const tooltipStyle = {
@@ -204,7 +181,7 @@ const tooltipStyle = {
   fontFamily: "Plus Jakarta Sans",
 };
 
-type ModalType = "burnout" | "unit" | "staf" | "optimasi" | null;
+type ModalType = "burnout" | "unit" | "staf" | "beban" | null;
 
 export default function DirekturPage() {
   const [activeModal, setActiveModal] = useState<ModalType>(null);
@@ -302,18 +279,18 @@ export default function DirekturPage() {
             />
           </div>
           <div
-            onClick={() => setActiveModal("optimasi")}
+            onClick={() => setActiveModal("beban")}
             className="cursor-pointer transition-transform duration-200 hover:scale-[1.02] h-full [&>div]:h-full"
             role="button"
             tabIndex={0}
-            onKeyDown={(e) => e.key === "Enter" && setActiveModal("optimasi")}
+            onKeyDown={(e) => e.key === "Enter" && setActiveModal("beban")}
           >
             <KPICard
-              title="Efektivitas Optimasi"
-              value="82%"
-              subtitle="Keberhasilan AI menurunkan konflik shift"
+              title="Prediksi Puncak Beban"
+              value="168 pasien"
+              subtitle="Lonjakan klinis tertinggi pada 16 Jul"
               icon={TrendingUp}
-              color="green"
+              color="rose"
             />
           </div>
         </div>
@@ -452,15 +429,15 @@ export default function DirekturPage() {
               </p>
             </div>
             <div
-              className="p-4 rounded-2xl text-center bg-[#e8f5e9]"
+              className="p-4 rounded-2xl text-center bg-[#fce8e8]"
               style={{
                 boxShadow:
                   "inset 2px 2px 4px rgba(255,255,255,0.7), inset -2px -2px 4px rgba(0,0,0,0.04)",
               }}
             >
-              <p className="text-2xl font-extrabold text-on-surface">82%</p>
+              <p className="text-2xl font-extrabold text-on-surface">168</p>
               <p className="text-xs text-on-surface-variant mt-1 font-medium">
-                Efektivitas Optimasi Jadwal
+                Prediksi Puncak Pasien
               </p>
             </div>
           </div>
@@ -503,8 +480,8 @@ export default function DirekturPage() {
                 {activeModal === "burnout" && "Detail Rata-rata Risiko Burnout"}
                 {activeModal === "unit" && "Detail Unit Risiko Tertinggi"}
                 {activeModal === "staf" && "Detail Staf Membutuhkan Istirahat"}
-                {activeModal === "optimasi" &&
-                  "Detail Efektivitas Optimasi Jadwal AI"}
+                {activeModal === "beban" &&
+                  "Detail Prediksi Puncak Beban Pasien"}
               </h2>
               <button
                 onClick={() => setActiveModal(null)}
@@ -862,37 +839,35 @@ export default function DirekturPage() {
                 </>
               )}
 
-              {/* ── MODAL 4: Efektivitas Optimasi ── */}
-              {activeModal === "optimasi" && (
+              {/* ── MODAL 4: Prediksi Puncak Beban ── */}
+              {activeModal === "beban" && (
                 <>
                   <div className="flex items-center gap-4">
-                    <div className="clay-icon-tray bg-[#e8f5e9] shrink-0">
-                      <TrendingUp className="w-5 h-5 text-[#2ae500]" />
+                    <div className="clay-icon-tray bg-[#fce8e8] shrink-0">
+                      <TrendingUp className="w-5 h-5 text-[#e57373]" />
                     </div>
                     <div>
                       <p className="text-3xl font-extrabold text-on-surface">
-                        82%
+                        168 pasien
                       </p>
                       <p className="text-xs text-on-surface-variant">
-                        Tingkat keberhasilan AI dalam menurunkan konflik shift,
-                        mengurangi beban berlebih, dan meningkatkan pemerataan
-                        jadwal.
+                        Prediksi lonjakan pasien tertinggi pada tanggal 16 Juli berdasarkan data historis dan peramalan AI.
                       </p>
                     </div>
                   </div>
 
                   <div>
                     <h4 className="text-sm font-bold text-on-surface mb-3">
-                      Perbandingan Sebelum dan Sesudah Optimasi
+                      Sebaran Prediksi Puncak per Unit (16 Jul)
                     </h4>
                     <div
                       className="chart-container"
-                      style={{ height: "280px" }}
+                      style={{ height: "240px" }}
                     >
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart
-                          data={optimasiData}
-                          margin={{ top: 10, right: 10, left: -10, bottom: 20 }}
+                          data={puncakBebanData}
+                          margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
                         >
                           <CartesianGrid
                             strokeDasharray="3 3"
@@ -900,12 +875,11 @@ export default function DirekturPage() {
                             stroke="#ebefed"
                           />
                           <XAxis
-                            dataKey="indikator"
+                            dataKey="unit"
                             tick={{ fontSize: 10, fill: "#6b7c63" }}
                             axisLine={false}
                             tickLine={false}
                             dy={10}
-                            interval={0}
                           />
                           <YAxis
                             tick={{ fontSize: 11, fill: "#6b7c63" }}
@@ -916,67 +890,25 @@ export default function DirekturPage() {
                             contentStyle={tooltipStyle}
                             cursor={{ fill: "#f6faf8" }}
                           />
-                          <Legend
-                            iconType="circle"
-                            wrapperStyle={{
-                              fontSize: "11px",
-                              paddingTop: "8px",
-                            }}
-                          />
                           <Bar
-                            dataKey="Sebelum"
-                            fill="#e57373"
+                            dataKey="pasien"
                             radius={[4, 4, 0, 0]}
-                            name="Sebelum Optimasi"
-                          />
-                          <Bar
-                            dataKey="Sesudah"
-                            fill="#106e00"
-                            radius={[4, 4, 0, 0]}
-                            name="Sesudah Optimasi"
-                          />
+                            name="Jumlah Pasien"
+                          >
+                            {puncakBebanData.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={entry.warna} />
+                            ))}
+                          </Bar>
                         </BarChart>
                       </ResponsiveContainer>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2">
-                    {optimasiData.map((item) => {
-                      const penurunan = item.Sebelum - item.Sesudah;
-                      const pct = Math.round((penurunan / item.Sebelum) * 100);
-                      return (
-                        <div
-                          key={item.indikator}
-                          className="p-3 rounded-xl bg-surface-container-low border border-surface-container text-center"
-                        >
-                          <p className="text-[10px] font-semibold text-on-surface-variant mb-1">
-                            {item.indikatorFull}
-                          </p>
-                          <div className="flex items-center justify-center gap-1.5 mb-1">
-                            <span className="text-xs text-[#c62828] font-bold">
-                              {item.Sebelum}
-                            </span>
-                            <span className="text-[10px] text-outline">→</span>
-                            <span className="text-xs text-[#106e00] font-bold">
-                              {item.Sesudah}
-                            </span>
-                          </div>
-                          <p className="text-[10px] text-[#106e00] font-semibold">
-                            ↓ {pct}%
-                          </p>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  <div className="p-4 rounded-xl bg-[#e8f5e9] border-l-4 border-l-[#81c784]">
+                  <div className="p-4 rounded-xl bg-[#fce8e8] border-l-4 border-l-[#e57373]">
                     <div className="flex items-start gap-2">
-                      <Lightbulb className="w-4 h-4 text-[#106e00] mt-0.5 shrink-0" />
+                      <Lightbulb className="w-4 h-4 text-[#e57373] mt-0.5 shrink-0" />
                       <p className="text-xs sm:text-sm text-on-surface-variant leading-relaxed">
-                        Optimasi AI berhasil meningkatkan pemerataan beban kerja
-                        dan menurunkan risiko jadwal berlebih. Dampak paling
-                        signifikan terlihat pada penurunan risiko double-shift
-                        dan konflik jadwal.
+                        Peramalan AI menunjukkan IGD dan ICU akan menerima tekanan terbesar pada puncak lonjakan (16 Jul). Sistem telah menyesuaikan simulasi penjadwalan untuk memastikan staf dengan risiko burnout rendah dialokasikan secara merata.
                       </p>
                     </div>
                   </div>

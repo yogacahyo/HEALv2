@@ -5,7 +5,7 @@ import { useSIMRSDatasetStore } from '@/context/useSIMRSDatasetStore';
 import { SectionHeader } from '@/components/common/SectionHeader';
 import { StatusBadge } from '@/components/common/StatusBadge';
 import { EmptyState } from '@/components/common/EmptyState';
-import { ArrowLeftRight, Check, X, RotateCcw, MessageSquare, Filter, ShieldCheck, ShieldAlert } from 'lucide-react';
+import { ArrowLeftRight, Check, X, RotateCcw, MessageSquare, Filter, ShieldCheck, ShieldAlert, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { formatDateTime, formatDateShort } from '@/lib/formatters';
 import { format, parseISO, isValid } from 'date-fns';
 import { id } from 'date-fns/locale';
@@ -26,6 +26,7 @@ export default function ShiftSwapApprovalPage() {
   const { state, approveShiftSwapRequest, rejectShiftSwapRequest, requestShiftSwapImprovement } = useSIMRSDatasetStore();
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
   const [adminNote, setAdminNote] = useState<Record<string, string>>({});
+  const [selectedReqForCalendar, setSelectedReqForCalendar] = useState<any>(null);
 
   const filteredRequests = state.shiftSwapRequests.filter((r) =>
     filterStatus === 'all' ? true : r.status === filterStatus
@@ -99,8 +100,15 @@ export default function ShiftSwapApprovalPage() {
                     <span className="text-[10px] font-bold text-on-surface-variant bg-surface-container-high px-2 py-0.5 rounded-full border border-outline-variant">{req.department_name}</span>
                   </div>
                   
-                  <h4 className="text-lg font-bold text-on-surface">
+                  <h4 className="text-lg font-bold text-on-surface flex items-center gap-2">
                     {req.requester_name || `ID: ${req.requester_id}`}
+                    <button
+                      onClick={() => setSelectedReqForCalendar(req)}
+                      className="p-1.5 rounded-md hover:bg-surface-container-high text-on-surface-variant transition-colors"
+                      title="Lihat Jadwal 2 Bulan"
+                    >
+                      <Calendar className="w-4 h-4" />
+                    </button>
                   </h4>
 
                   <div className="flex items-center gap-3 w-max bg-surface-container px-4 py-2.5 rounded-xl border border-surface-container-high">
@@ -188,6 +196,103 @@ export default function ShiftSwapApprovalPage() {
               )}
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Calendar Modal */}
+      {selectedReqForCalendar && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-surface rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-surface-container-high">
+              <div>
+                <h3 className="text-xl font-extrabold text-on-surface">
+                  Jadwal {selectedReqForCalendar.requester_name || `ID: ${selectedReqForCalendar.requester_id}`}
+                </h3>
+                <p className="text-sm text-on-surface-variant">
+                  {selectedReqForCalendar.department_name} • Riwayat 2 Bulan Terakhir
+                </p>
+              </div>
+              <button
+                onClick={() => setSelectedReqForCalendar(null)}
+                className="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 overflow-y-auto flex-1">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                {/* Previous Month */}
+                <div className="space-y-4">
+                  <div className="text-center font-bold text-on-surface">Bulan Sebelumnya</div>
+                  <div className="grid grid-cols-7 gap-1 text-center">
+                    {['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'].map((d) => (
+                      <div key={d} className="text-xs font-semibold text-on-surface-variant py-2">{d}</div>
+                    ))}
+                    {Array.from({ length: 30 }).map((_, i) => {
+                      // Dummy shifts logic
+                      const shifts = ['P', 'S', 'M', 'O', 'P', 'P', 'S'];
+                      const shift = shifts[i % 7];
+                      let bgColor = 'bg-gray-100';
+                      let textColor = 'text-gray-800';
+                      if (shift === 'P') { bgColor = 'bg-blue-100'; textColor = 'text-blue-800'; }
+                      if (shift === 'S') { bgColor = 'bg-amber-100'; textColor = 'text-amber-800'; }
+                      if (shift === 'M') { bgColor = 'bg-slate-700'; textColor = 'text-slate-100'; }
+                      if (shift === 'O') { bgColor = 'bg-green-100'; textColor = 'text-green-800'; }
+                      return (
+                        <div key={`prev-${i}`} className="aspect-square flex flex-col items-center justify-center p-1 border border-surface-container-low rounded-lg">
+                          <span className="text-[10px] text-outline mb-1">{i + 1}</span>
+                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${bgColor} ${textColor}`}>
+                            {shift}
+                          </span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* Current Month */}
+                <div className="space-y-4">
+                  <div className="text-center font-bold text-on-surface">Bulan Ini</div>
+                  <div className="grid grid-cols-7 gap-1 text-center">
+                    {['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'].map((d) => (
+                      <div key={d} className="text-xs font-semibold text-on-surface-variant py-2">{d}</div>
+                    ))}
+                    {Array.from({ length: 31 }).map((_, i) => {
+                      // Dummy shifts logic
+                      const shifts = ['S', 'M', 'O', 'P', 'P', 'S', 'O'];
+                      const shift = shifts[i % 7];
+                      let bgColor = 'bg-gray-100';
+                      let textColor = 'text-gray-800';
+                      if (shift === 'P') { bgColor = 'bg-blue-100'; textColor = 'text-blue-800'; }
+                      if (shift === 'S') { bgColor = 'bg-amber-100'; textColor = 'text-amber-800'; }
+                      if (shift === 'M') { bgColor = 'bg-slate-700'; textColor = 'text-slate-100'; }
+                      if (shift === 'O') { bgColor = 'bg-green-100'; textColor = 'text-green-800'; }
+                      return (
+                        <div key={`curr-${i}`} className={`aspect-square flex flex-col items-center justify-center p-1 border rounded-lg ${i + 1 === 16 ? 'border-primary bg-primary/5' : 'border-surface-container-low'}`}>
+                          <span className="text-[10px] text-outline mb-1">{i + 1}</span>
+                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${bgColor} ${textColor}`}>
+                            {shift}
+                          </span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+
+              </div>
+              
+              <div className="mt-6 flex flex-wrap gap-4 text-xs justify-center border-t border-surface-container-high pt-4">
+                <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-blue-100 border border-blue-200"></span> Pagi (07-14)</div>
+                <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-amber-100 border border-amber-200"></span> Sore (14-21)</div>
+                <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-slate-700 border border-slate-800"></span> Malam (21-07)</div>
+                <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-green-100 border border-green-200"></span> Libur (Off)</div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
