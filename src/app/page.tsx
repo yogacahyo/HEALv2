@@ -42,15 +42,7 @@ const roles = [
     iconColor: 'text-[#5c6bc0]',
     accent: 'text-[#283593]',
   },
-  {
-    title: 'Tabel Data SIMRS',
-    description: 'Dokumentasi tabel dan kolom database SIMRS yang digunakan dalam prototype.',
-    href: '/tabel-data-simrs',
-    icon: Database,
-    iconBg: 'bg-surface-container-high',
-    iconColor: 'text-outline',
-    accent: 'text-on-surface-variant',
-  },
+
   {
     title: 'Panduan Penggunaan',
     description: 'Panduan lengkap penggunaan website untuk seluruh role.',

@@ -288,24 +288,7 @@ const sections = [
     ],
   },
 
-  // ── 7. TABEL DATA SIMRS ───────────────────────────────────────────
-  {
-    page: "Tabel Data SIMRS",
-    route: "/tabel-data-simrs",
-    icon: Database,
-    color: "#f3e5f5",
-    iconColor: "#6a1b9a",
-    desc: "Dokumentasi skema database SIMRS yang menjadi sumber data seluruh halaman di sistem HEALv2.",
-    dataGroups: [
-      {
-        label: "Skema Tabel: Pasien, Dokter, Staf, Absensi, Jadwal, dll.",
-        type: "tabel",
-        asal: "Data dalam halaman ini merepresentasikan struktur tabel dari SIMRS (Sistem Informasi Manajemen Rumah Sakit). Tabel-tabel utama: patient_records (data pasien), staff_schedules (jadwal staf), attendance_logs (log absensi), burnout_assessments (hasil survei burnout), shift_swap_requests (pengajuan tukar shift).",
-        kesimpulan:
-          "Halaman ini berfungsi sebagai dokumentasi teknis untuk tim IT/developer yang akan mengintegrasikan sistem HEALv2 dengan SIMRS nyata. Semua angka dan data di seluruh halaman lain berasal dari tabel-tabel yang terdokumentasi di sini.",
-      },
-    ],
-  },
+
 ];
 
 const typeBadge: Record<string, { label: string; bg: string; color: string }> =
