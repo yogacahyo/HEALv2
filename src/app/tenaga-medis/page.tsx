@@ -139,6 +139,7 @@ export default function TenagaMedisPage() {
 
   // Shift swap form
   const [swapForm, setSwapForm] = useState({
+    target_employee_id: "",
     current_date: today,
     current_shift: "Pagi" as ShiftType,
     requested_date: "",
@@ -148,6 +149,7 @@ export default function TenagaMedisPage() {
   });
 
   const [cutiForm, setCutiForm] = useState({
+    target_employee_id: "",
     requested_date: "",
     requested_end_date: "",
     reason: "",
@@ -761,6 +763,28 @@ export default function TenagaMedisPage() {
 
             {/* Swap Form */}
             <div className="clay-card p-5 space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-on-surface-variant mb-1">
+                  Nama Tenaga Medis
+                </label>
+                <select
+                  value={swapForm.target_employee_id}
+                  onChange={(e) =>
+                    setSwapForm((p) => ({
+                      ...p,
+                      target_employee_id: e.target.value,
+                    }))
+                  }
+                  className="clay-input w-full px-3 py-2 text-sm"
+                >
+                  <option value="">-- Pilih Tenaga Medis --</option>
+                  {medicalStaff.map((staff) => (
+                    <option key={staff.employee_id} value={staff.employee_id}>
+                      {staff.first_name} {staff.last_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-on-surface-variant mb-1">
@@ -866,7 +890,7 @@ export default function TenagaMedisPage() {
               </div>
               <button
                 onClick={handleSwapSubmit}
-                disabled={!swapForm.requested_date || !swapForm.reason}
+                disabled={!swapForm.target_employee_id || !swapForm.requested_date || !swapForm.reason}
                 className="clay-btn w-full px-4 py-3 bg-[#1565c0] text-white text-sm font-semibold hover:bg-[#0d47a1] disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 <Send className="w-4 h-4" /> Ajukan Pergantian Shift
@@ -879,6 +903,28 @@ export default function TenagaMedisPage() {
                 <Calendar className="w-5 h-5 text-gray-500" />
                 Pengajuan Cuti
               </h3>
+              <div>
+                <label className="block text-xs font-semibold text-on-surface-variant mb-1">
+                  Nama Tenaga Medis
+                </label>
+                <select
+                  value={cutiForm.target_employee_id}
+                  onChange={(e) =>
+                    setCutiForm((p) => ({
+                      ...p,
+                      target_employee_id: e.target.value,
+                    }))
+                  }
+                  className="clay-input w-full px-3 py-2 text-sm"
+                >
+                  <option value="">-- Pilih Tenaga Medis --</option>
+                  {medicalStaff.map((staff) => (
+                    <option key={staff.employee_id} value={staff.employee_id}>
+                      {staff.first_name} {staff.last_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-on-surface-variant mb-1">
@@ -945,7 +991,7 @@ export default function TenagaMedisPage() {
               </div>
               <button
                 onClick={handleCutiSubmit}
-                disabled={!cutiForm.requested_date || !cutiForm.requested_end_date || !cutiForm.reason}
+                disabled={!cutiForm.target_employee_id || !cutiForm.requested_date || !cutiForm.requested_end_date || !cutiForm.reason}
                 className="clay-btn w-full px-4 py-3 bg-gray-600 text-white text-sm font-semibold hover:bg-gray-700 disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 <Send className="w-4 h-4" /> Ajukan Cuti
