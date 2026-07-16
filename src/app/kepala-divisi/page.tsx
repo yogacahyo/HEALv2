@@ -104,6 +104,12 @@ function RequestCard({
         <div className="flex-1 min-w-0 space-y-3">
           <h4 className="text-lg font-bold text-on-surface flex items-center gap-2">
             {req.requester_name || `ID: ${req.requester_id}`}
+            {req.target_employee_name && (
+              <>
+                <ArrowLeftRight className="w-4 h-4 text-on-surface-variant opacity-60" />
+                <span className="text-[#1565c0]">{req.target_employee_name}</span>
+              </>
+            )}
             <Calendar className="w-4 h-4 text-on-surface-variant opacity-40" />
           </h4>
 

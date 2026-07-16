@@ -559,6 +559,8 @@ export interface ShiftSwapRequest {
   requester_role: 'dokter' | 'perawat';
   requester_name?: string;
   department_name?: string;
+  target_employee_id?: string;
+  target_employee_name?: string;
   current_date: string;
   current_shift: ShiftType;
   requested_date: string;

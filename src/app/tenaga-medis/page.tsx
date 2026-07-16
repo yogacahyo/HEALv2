@@ -197,6 +197,11 @@ export default function TenagaMedisPage() {
   };
   const handleSwapSubmit = () => {
     if (!selectedEmp || !swapForm.requested_date || !swapForm.reason) return;
+    const targetEmp = swapForm.target_employee_id 
+      ? medicalStaff.find(m => String(m.employee_id) === swapForm.target_employee_id)
+      : undefined;
+    const target_employee_name = targetEmp ? `${targetEmp.first_name} ${targetEmp.last_name}` : undefined;
+
     submitShiftSwapRequest({
       requester_id: String(selectedEmp.employee_id),
       requester_role: empPos?.position_name.toLowerCase().includes("doctor")
@@ -204,6 +209,7 @@ export default function TenagaMedisPage() {
         : "perawat",
       requester_name: `${selectedEmp.first_name} ${selectedEmp.last_name}`,
       department_name: empPos?.description || "",
+      target_employee_name: target_employee_name,
       ...swapForm,
     });
     setSwapForm({
@@ -218,7 +224,18 @@ export default function TenagaMedisPage() {
   };
 
   const handleCutiSubmit = () => {
-    if (!selectedEmp || !cutiForm.requested_date || !cutiForm.requested_end_date || !cutiForm.reason) return;
+    if (
+      !selectedEmp ||
+      !cutiForm.requested_date ||
+      !cutiForm.requested_end_date ||
+      !cutiForm.reason
+    )
+      return;
+    const targetEmp = cutiForm.target_employee_id 
+      ? medicalStaff.find(m => String(m.employee_id) === cutiForm.target_employee_id)
+      : undefined;
+    const target_employee_name = targetEmp ? `${targetEmp.first_name} ${targetEmp.last_name}` : undefined;
+
     submitShiftSwapRequest({
       requester_id: String(selectedEmp.employee_id),
       requester_role: empPos?.position_name.toLowerCase().includes("doctor")
@@ -226,6 +243,8 @@ export default function TenagaMedisPage() {
         : "perawat",
       requester_name: `${selectedEmp.first_name} ${selectedEmp.last_name}`,
       department_name: empPos?.description || "",
+      target_employee_id: cutiForm.target_employee_id,
+      target_employee_name: target_employee_name,
       current_date: cutiForm.requested_date,
       current_shift: "Pagi", // Dummy untuk cuti
       requested_date: cutiForm.requested_date,
@@ -767,7 +786,7 @@ export default function TenagaMedisPage() {
             <div className="clay-card p-5 space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-on-surface-variant mb-1">
-                  Nama Tenaga Medis
+                  Nama Tenaga Medis Pengganti
                 </label>
                 <select
                   value={swapForm.target_employee_id}
@@ -892,7 +911,11 @@ export default function TenagaMedisPage() {
               </div>
               <button
                 onClick={handleSwapSubmit}
-                disabled={!swapForm.target_employee_id || !swapForm.requested_date || !swapForm.reason}
+                disabled={
+                  !swapForm.target_employee_id ||
+                  !swapForm.requested_date ||
+                  !swapForm.reason
+                }
                 className="clay-btn w-full px-4 py-3 bg-[#1565c0] text-white text-sm font-semibold hover:bg-[#0d47a1] disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 <Send className="w-4 h-4" /> Ajukan Pergantian Shift
@@ -907,7 +930,7 @@ export default function TenagaMedisPage() {
               </h3>
               <div>
                 <label className="block text-xs font-semibold text-on-surface-variant mb-1">
-                  Nama Tenaga Medis
+                  Nama Tenaga Medis Pengganti
                 </label>
                 <select
                   value={cutiForm.target_employee_id}
@@ -993,7 +1016,12 @@ export default function TenagaMedisPage() {
               </div>
               <button
                 onClick={handleCutiSubmit}
-                disabled={!cutiForm.target_employee_id || !cutiForm.requested_date || !cutiForm.requested_end_date || !cutiForm.reason}
+                disabled={
+                  !cutiForm.target_employee_id ||
+                  !cutiForm.requested_date ||
+                  !cutiForm.requested_end_date ||
+                  !cutiForm.reason
+                }
                 className="clay-btn w-full px-4 py-3 bg-gray-600 text-white text-sm font-semibold hover:bg-gray-700 disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 <Send className="w-4 h-4" /> Ajukan Cuti

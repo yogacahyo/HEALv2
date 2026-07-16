@@ -110,6 +110,12 @@ export default function ShiftSwapApprovalPage() {
                   
                   <h4 className="text-lg font-bold text-on-surface flex items-center gap-2">
                     {req.requester_name || `ID: ${req.requester_id}`}
+                    {req.target_employee_name && (
+                      <>
+                        <ArrowLeftRight className="w-4 h-4 text-on-surface-variant opacity-60" />
+                        <span className="text-[#1565c0]">{req.target_employee_name}</span>
+                      </>
+                    )}
                     <button
                       onClick={() => setSelectedReqForCalendar(req)}
                       className="p-1.5 rounded-md hover:bg-surface-container-high text-on-surface-variant transition-colors"
