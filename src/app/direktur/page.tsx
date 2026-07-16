@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { KPICard } from "@/components/common/KPICard";
+import { NotificationDropdown } from "@/components/common/NotificationDropdown";
+import { FloatingChat } from "@/components/common/FloatingChat";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { ResponsiveChartCard } from "@/components/common/ResponsiveChartCard";
 import {
@@ -226,6 +228,9 @@ export default function DirekturPage() {
                 AI Shifting — Pemantauan Burnout Tenaga Medis
               </p>
             </div>
+          </div>
+          <div className="flex items-center">
+            <NotificationDropdown />
           </div>
         </div>
       </header>
@@ -918,6 +923,8 @@ export default function DirekturPage() {
           </div>
         </div>
       )}
+
+      <FloatingChat />
     </div>
   );
 }

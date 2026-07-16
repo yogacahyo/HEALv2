@@ -3,6 +3,8 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useSIMRSDatasetStore } from "@/context/useSIMRSDatasetStore";
+import { NotificationDropdown } from "@/components/common/NotificationDropdown";
+import { FloatingChat } from "@/components/common/FloatingChat";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import {
   Home,
@@ -386,7 +388,9 @@ export default function KepalaDivisiPage() {
           <div className="text-center">
             <h1 className="text-sm font-bold">HEAL • Kepala Divisi</h1>
           </div>
-          <div className="w-9" />
+          <div className="-mr-2">
+            <NotificationDropdown />
+          </div>
         </div>
 
         {/* Profile */}
@@ -587,6 +591,8 @@ export default function KepalaDivisiPage() {
           })}
         </div>
       </nav>
+
+      <FloatingChat fabOffset="bottom-20 sm:bottom-8 right-6 sm:right-8" />
     </div>
   );
 }

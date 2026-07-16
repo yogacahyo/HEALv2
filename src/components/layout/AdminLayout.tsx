@@ -20,6 +20,8 @@ import {
   Home,
   User,
 } from "lucide-react";
+import { NotificationDropdown } from "@/components/common/NotificationDropdown";
+import { FloatingChat } from "@/components/common/FloatingChat";
 
 const menuItems = [
   {
@@ -100,12 +102,17 @@ export function AdminLayout({ children }: { children: ReactNode }) {
                 </p>
               </div>
             </div>
-            <button
-              onClick={() => setSidebarOpen(false)}
-              className="lg:hidden p-1.5 hover:bg-surface-container rounded-lg transition-colors"
-            >
-              <X className="w-5 h-5 text-outline" />
-            </button>
+            <div className="flex items-center gap-1">
+              <div className="text-outline">
+                <NotificationDropdown align="left" />
+              </div>
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="lg:hidden p-1.5 hover:bg-surface-container rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5 text-outline" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -178,12 +185,16 @@ export function AdminLayout({ children }: { children: ReactNode }) {
                 HEAL Admin
               </span>
             </div>
-            <div className="w-9" /> {/* Spacer */}
+            <div className="text-on-surface-variant">
+              <NotificationDropdown />
+            </div>
           </div>
         </header>
 
         <div className="p-4 sm:p-6 lg:p-8">{children}</div>
       </main>
+
+      <FloatingChat />
     </div>
   );
 }
