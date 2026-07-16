@@ -3,17 +3,8 @@
 import { useState, useMemo } from "react";
 import { SectionHeader } from "@/components/common/SectionHeader";
 import { StatusBadge } from "@/components/common/StatusBadge";
-import {
-  CalendarClock,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
-import {
-  getDaysInMonth,
-  startOfMonth,
-  getDay,
-  format,
-} from "date-fns";
+import { CalendarClock, ChevronLeft, ChevronRight } from "lucide-react";
+import { getDaysInMonth, startOfMonth, getDay, format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 
 // ─── Types ───────────────────────────────────────────────────
@@ -39,18 +30,78 @@ interface StaffSchedule {
 
 // ─── Seed Data ───────────────────────────────────────────────
 const dummyStaffList = [
-  { nama: "dr. Andika Pratama",  profesi: "Dokter",  unit: "IGD",                  risiko: "Kritis" },
-  { nama: "Ns. Rina Wulandari",  profesi: "Perawat", unit: "ICU / NICU / PICU",    risiko: "Tinggi" },
-  { nama: "dr. Maya Lestari",    profesi: "Dokter",  unit: "Kamar Operasi",         risiko: "Tinggi" },
-  { nama: "Ns. Siti Aisyah",     profesi: "Perawat", unit: "Ruang Bersalin",        risiko: "Sedang" },
-  { nama: "Ns. Dwi Santoso",     profesi: "Perawat", unit: "Isolasi / Onkologi",    risiko: "Sedang" },
-  { nama: "dr. Bima Saputra",    profesi: "Dokter",  unit: "IGD",                  risiko: "Sedang" },
-  { nama: "Ns. Laila Putri",     profesi: "Perawat", unit: "ICU / NICU / PICU",    risiko: "Sedang" },
-  { nama: "Ns. Arif Hidayat",    profesi: "Perawat", unit: "IGD",                  risiko: "Tinggi" },
-  { nama: "dr. Citra Dewi",      profesi: "Dokter",  unit: "Ruang Bersalin",        risiko: "Sedang" },
-  { nama: "Ns. Yoga Prasetyo",   profesi: "Perawat", unit: "Kamar Operasi",         risiko: "Rendah" },
-  { nama: "Ns. Hana Maharani",   profesi: "Perawat", unit: "Isolasi / Onkologi",    risiko: "Rendah" },
-  { nama: "dr. Fajar Nugroho",   profesi: "Dokter",  unit: "ICU / NICU / PICU",    risiko: "Sedang" },
+  {
+    nama: "dr. Andika Pratama",
+    profesi: "Dokter",
+    unit: "IGD",
+    risiko: "Kritis",
+  },
+  {
+    nama: "Ns. Rina Wulandari",
+    profesi: "Perawat",
+    unit: "ICU / NICU / PICU",
+    risiko: "Tinggi",
+  },
+  {
+    nama: "dr. Maya Lestari",
+    profesi: "Dokter",
+    unit: "Kamar Operasi",
+    risiko: "Tinggi",
+  },
+  {
+    nama: "Ns. Siti Aisyah",
+    profesi: "Perawat",
+    unit: "Ruang Bersalin",
+    risiko: "Sedang",
+  },
+  {
+    nama: "Ns. Dwi Santoso",
+    profesi: "Perawat",
+    unit: "Isolasi / Onkologi",
+    risiko: "Sedang",
+  },
+  {
+    nama: "dr. Bima Saputra",
+    profesi: "Dokter",
+    unit: "IGD",
+    risiko: "Sedang",
+  },
+  {
+    nama: "Ns. Laila Putri",
+    profesi: "Perawat",
+    unit: "ICU / NICU / PICU",
+    risiko: "Sedang",
+  },
+  {
+    nama: "Ns. Arif Hidayat",
+    profesi: "Perawat",
+    unit: "IGD",
+    risiko: "Tinggi",
+  },
+  {
+    nama: "dr. Citra Dewi",
+    profesi: "Dokter",
+    unit: "Ruang Bersalin",
+    risiko: "Sedang",
+  },
+  {
+    nama: "Ns. Yoga Prasetyo",
+    profesi: "Perawat",
+    unit: "Kamar Operasi",
+    risiko: "Rendah",
+  },
+  {
+    nama: "Ns. Hana Maharani",
+    profesi: "Perawat",
+    unit: "Isolasi / Onkologi",
+    risiko: "Rendah",
+  },
+  {
+    nama: "dr. Fajar Nugroho",
+    profesi: "Dokter",
+    unit: "ICU / NICU / PICU",
+    risiko: "Sedang",
+  },
 ];
 
 // ─── Hari Libur Nasional Indonesia ───────────────────────────
@@ -144,7 +195,11 @@ function generateScheduleData(year: number, month: number) {
     const staff = dummyStaffList[i];
     const dailyShifts: DailyShift[] = [];
 
-    let totalShift = 0, totalPagi = 0, totalSore = 0, totalMalam = 0, totalOff = 0;
+    let totalShift = 0,
+      totalPagi = 0,
+      totalSore = 0,
+      totalMalam = 0,
+      totalOff = 0;
     const sequenceOffset = i % 4;
 
     for (let day = 1; day <= daysInMonth; day++) {
@@ -152,12 +207,20 @@ function generateScheduleData(year: number, month: number) {
       let shift = baseSequence[(day + sequenceOffset) % 4];
 
       // Pada hari libur/merah: staf risiko Rendah/Sedang cenderung Off
-      if (isRed && (staff.risiko === "Rendah" || staff.risiko === "Sedang") && day % 2 === 0) {
+      if (
+        isRed &&
+        (staff.risiko === "Rendah" || staff.risiko === "Sedang") &&
+        day % 2 === 0
+      ) {
         shift = "O";
       }
 
       // Aturan khusus berdasarkan risiko
-      if ((staff.risiko === "Kritis" || staff.risiko === "Tinggi") && shift === "M" && day % 3 === 0) {
+      if (
+        (staff.risiko === "Kritis" || staff.risiko === "Tinggi") &&
+        shift === "M" &&
+        day % 3 === 0
+      ) {
         shift = "O";
       }
 
@@ -170,12 +233,25 @@ function generateScheduleData(year: number, month: number) {
       dailyShifts.push({ day, shift });
     }
 
-    const fairnessScore = Math.max(0, 100 - Math.max(0, totalMalam - 6) * 5 - Math.max(0, totalShift - 22) * 4);
+    const fairnessScore = Math.max(
+      0,
+      100 - Math.max(0, totalMalam - 6) * 5 - Math.max(0, totalShift - 22) * 4,
+    );
     let status = "Aman";
     if (fairnessScore < 70) status = "Rekomendasi Revisi";
     else if (totalMalam > 6) status = "Perlu Review";
 
-    schedules.push({ ...staff, dailyShifts, totalShift, totalPagi, totalSore, totalMalam, totalOff, fairnessScore, status });
+    schedules.push({
+      ...staff,
+      dailyShifts,
+      totalShift,
+      totalPagi,
+      totalSore,
+      totalMalam,
+      totalOff,
+      fairnessScore,
+      status,
+    });
   }
 
   return schedules;
@@ -232,8 +308,18 @@ const ShiftBadge = ({ shift, isRed }: { shift: string; isRed: boolean }) => {
 
 // ─── Month names in Indonesian ────────────────────────────────
 const MONTH_NAMES = [
-  "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-  "Juli", "Agustus", "September", "Oktober", "November", "Desember",
+  "Januari",
+  "Februari",
+  "Maret",
+  "April",
+  "Mei",
+  "Juni",
+  "Juli",
+  "Agustus",
+  "September",
+  "Oktober",
+  "November",
+  "Desember",
 ];
 
 // ─── Main Page ────────────────────────────────────────────────
@@ -248,19 +334,26 @@ export default function AutoRosteringPage() {
 
   // Navigate months
   const goToPrev = () => {
-    if (month === 1) { setMonth(12); setYear((y) => y - 1); }
-    else setMonth((m) => m - 1);
+    if (month === 1) {
+      setMonth(12);
+      setYear((y) => y - 1);
+    } else setMonth((m) => m - 1);
   };
   const goToNext = () => {
-    if (month === 12) { setMonth(1); setYear((y) => y + 1); }
-    else setMonth((m) => m + 1);
+    if (month === 12) {
+      setMonth(1);
+      setYear((y) => y + 1);
+    } else setMonth((m) => m + 1);
   };
 
   const daysInMonth = getDaysInMonth(new Date(year, month - 1));
 
   // Day info array for column headers
   const dayInfos = useMemo(
-    () => Array.from({ length: daysInMonth }, (_, i) => getDayInfo(year, month, i + 1)),
+    () =>
+      Array.from({ length: daysInMonth }, (_, i) =>
+        getDayInfo(year, month, i + 1),
+      ),
     [year, month, daysInMonth],
   );
 
@@ -272,8 +365,10 @@ export default function AutoRosteringPage() {
   const filteredSchedules = useMemo(() => {
     return allSchedules.filter((s) => {
       if (filterUnit !== "Semua Unit" && s.unit !== filterUnit) return false;
-      if (filterProfesi !== "Semua Profesi" && s.profesi !== filterProfesi) return false;
-      if (filterRisiko !== "Semua Risiko" && !s.risiko.includes(filterRisiko)) return false;
+      if (filterProfesi !== "Semua Profesi" && s.profesi !== filterProfesi)
+        return false;
+      if (filterRisiko !== "Semua Risiko" && !s.risiko.includes(filterRisiko))
+        return false;
       return true;
     });
   }, [allSchedules, filterUnit, filterProfesi, filterRisiko]);
@@ -357,7 +452,11 @@ export default function AutoRosteringPage() {
             </select>
 
             <button
-              onClick={() => { setFilterUnit("Semua Unit"); setFilterProfesi("Semua Profesi"); setFilterRisiko("Semua Risiko"); }}
+              onClick={() => {
+                setFilterUnit("Semua Unit");
+                setFilterProfesi("Semua Profesi");
+                setFilterRisiko("Semua Risiko");
+              }}
               className="clay-btn text-xs px-3 py-2 text-on-surface-variant hover:bg-surface-container"
             >
               Reset
@@ -402,7 +501,9 @@ export default function AutoRosteringPage() {
                     <th
                       key={i}
                       className={`text-center px-1 pt-2 pb-1 text-[10px] font-bold border-r border-surface-container-high min-w-[40px] max-w-[40px] ${
-                        info.isRed ? "text-rose-500 bg-rose-50" : "text-on-surface-variant bg-surface-container"
+                        info.isRed
+                          ? "text-rose-500 bg-rose-50"
+                          : "text-on-surface-variant bg-surface-container"
                       }`}
                       title={info.holidayName || ""}
                     >
@@ -461,7 +562,11 @@ export default function AutoRosteringPage() {
                         {staff.nama}
                       </td>
                       <td className="static xl:sticky xl:left-[200px] z-10 bg-surface p-3 border-r border-surface-container-high min-w-[90px] max-w-[90px]">
-                        <StatusBadge status={staff.profesi === "Dokter" ? "dokter" : "perawat"} />
+                        <StatusBadge
+                          status={
+                            staff.profesi === "Dokter" ? "dokter" : "perawat"
+                          }
+                        />
                       </td>
                       <td className="static xl:sticky xl:left-[290px] z-10 bg-surface p-3 text-xs text-on-surface-variant border-r border-surface-container-high truncate min-w-[140px] max-w-[140px]">
                         {staff.unit}
@@ -478,7 +583,10 @@ export default function AutoRosteringPage() {
                             title={info?.holidayName || ""}
                           >
                             <div className="flex justify-center">
-                              <ShiftBadge shift={ds.shift} isRed={info?.isRed ?? false} />
+                              <ShiftBadge
+                                shift={ds.shift}
+                                isRed={info?.isRed ?? false}
+                              />
                             </div>
                           </td>
                         );
@@ -504,26 +612,38 @@ export default function AutoRosteringPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
           {/* Shift Legend */}
           <div className="clay-card-sm p-4">
-            <h4 className="text-xs font-semibold text-on-surface-variant mb-2">Legenda Shift</h4>
+            <h4 className="text-xs font-semibold text-on-surface-variant mb-2">
+              Legenda Shift
+            </h4>
             <div className="flex flex-wrap gap-4 text-xs">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded bg-blue-100 text-blue-800 flex items-center justify-center font-bold">P</div>
+                <div className="w-6 h-6 rounded bg-blue-100 text-blue-800 flex items-center justify-center font-bold">
+                  P
+                </div>
                 <span>Pagi (07:00–14:00)</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded bg-amber-100 text-amber-800 flex items-center justify-center font-bold">S</div>
+                <div className="w-6 h-6 rounded bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
+                  S
+                </div>
                 <span>Sore (14:00–21:00)</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded bg-slate-700 text-slate-100 flex items-center justify-center font-bold">M</div>
+                <div className="w-6 h-6 rounded bg-slate-700 text-slate-100 flex items-center justify-center font-bold">
+                  M
+                </div>
                 <span>Malam (21:00–07:00)</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded bg-green-100 text-green-800 flex items-center justify-center font-bold">O</div>
+                <div className="w-6 h-6 rounded bg-green-100 text-green-800 flex items-center justify-center font-bold">
+                  O
+                </div>
                 <span>Off</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded bg-gray-100 text-gray-600 flex items-center justify-center font-bold">C</div>
+                <div className="w-6 h-6 rounded bg-gray-100 text-gray-600 flex items-center justify-center font-bold">
+                  C
+                </div>
                 <span>Cuti</span>
               </div>
             </div>
@@ -531,12 +651,10 @@ export default function AutoRosteringPage() {
 
           {/* Calendar Legend */}
           <div className="clay-card-sm p-4">
-            <h4 className="text-xs font-semibold text-on-surface-variant mb-2">Keterangan Kalender</h4>
+            <h4 className="text-xs font-semibold text-on-surface-variant mb-2">
+              Keterangan Kalender
+            </h4>
             <div className="flex flex-wrap gap-4 text-xs">
-              <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600 font-bold text-[10px]">7</div>
-                <span className="text-rose-600">Minggu / Hari Libur Nasional</span>
-              </div>
               <div className="flex items-center gap-2">
                 <span className="block w-2 h-2 rounded-full bg-rose-400 mt-0.5" />
                 <span>Titik merah = Hari libur nasional</span>
