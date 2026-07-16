@@ -584,7 +584,7 @@ export interface ShiftSwapRequest {
   ai_suitability_score?: number;
   ai_recommendation?: 'Approved' | 'Review' | 'Rejected';
   ai_constraint_message?: string;
-  kadiv_note?: string;          // Catatan Kepala Divisi
+  kadiv_note?: string;          // Catatan Kepala Unit
   kadiv_approved_at?: string;   // Timestamp Kadiv approval
   admin_note?: string;
   created_at: string;

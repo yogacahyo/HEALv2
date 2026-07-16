@@ -93,7 +93,7 @@ export default function ShiftSwapApprovalPage() {
       {filteredRequests.length === 0 ? (
         <EmptyState
           title="Belum ada pengajuan"
-          message="Pengajuan yang sudah disetujui Kepala Divisi (PENDING_ADMIN) akan muncul di sini untuk persetujuan akhir Admin."
+          message="Pengajuan yang sudah disetujui Kepala Unit (PENDING_ADMIN) akan muncul di sini untuk persetujuan akhir Admin."
         />
       ) : (
         <div className="space-y-4">
@@ -204,7 +204,7 @@ export default function ShiftSwapApprovalPage() {
               {/* Admin Note Input (Optional) */}
               {req.status === 'PENDING_ADMIN' && (
                 <div className="mt-4 pt-4 border-t border-surface-container-high">
-                  <p className="text-[10px] font-bold text-on-surface-variant mb-1.5 uppercase tracking-wide">Catatan dari Kepala Divisi:</p>
+                  <p className="text-[10px] font-bold text-on-surface-variant mb-1.5 uppercase tracking-wide">Catatan dari Kepala Unit:</p>
                   {req.kadiv_note && <p className="text-xs text-on-surface-variant mb-2 bg-surface-container px-3 py-2 rounded-lg">{req.kadiv_note}</p>}
                   <textarea
                     placeholder="Catatan admin (opsional)..."

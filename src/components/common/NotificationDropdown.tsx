@@ -36,7 +36,7 @@ export function NotificationDropdown({ align = "right" }: { align?: "left" | "ri
     {
       id: "3",
       title: "Pengajuan Disetujui",
-      message: "Pengajuan yang Anda kirimkan telah disetujui oleh Kepala Divisi.",
+      message: "Pengajuan yang Anda kirimkan telah disetujui oleh Kepala Unit.",
       type: "success",
       isRead: true,
       time: "1 hari yang lalu",

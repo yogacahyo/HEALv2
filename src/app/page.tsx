@@ -15,8 +15,8 @@ const roles = [
     accent: 'text-[#106e00]',
   },
   {
-    title: 'Kepala Divisi',
-    description: 'Panel persetujuan Tier-1 untuk pengajuan cuti dan swap shift. Kepala Divisi mereview dan meneruskan atau menolak pengajuan sebelum ke Admin.',
+    title: 'Kepala Unit',
+    description: 'Panel persetujuan Tier-1 untuk pengajuan cuti dan swap shift. Kepala Unit mereview dan meneruskan atau menolak pengajuan sebelum ke Admin.',
     href: '/kepala-divisi',
     icon: UserCheck,
     iconBg: 'bg-[#e0f7f4]',

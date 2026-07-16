@@ -24,7 +24,7 @@ const DUMMY_CHAT: Message[] = [
   {
     id: "2",
     sender: "dr. Agus Salim",
-    role: "Kepala Divisi",
+    role: "Kepala Unit",
     content: "Admin, tolong cek pengajuan cuti dr. Maya untuk minggu depan ya.",
     time: "09:15",
     isMine: false,

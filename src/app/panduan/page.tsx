@@ -268,7 +268,7 @@ const sections = [
     icon: AlertTriangle,
     color: "#fff8e1",
     iconColor: "#f57f17",
-    desc: "Panel persetujuan pengajuan tukar shift dari tenaga medis — alur dua tingkat (Kepala Divisi -> Admin).",
+    desc: "Panel persetujuan pengajuan tukar shift dari tenaga medis — alur dua tingkat (Kepala Unit -> Admin).",
     dataGroups: [
       {
         label:
