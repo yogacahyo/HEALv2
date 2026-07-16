@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Stethoscope, ShieldCheck, BarChart3, Database, BookOpen, Cpu, Activity } from 'lucide-react';
+import { Stethoscope, ShieldCheck, BarChart3, Database, BookOpen, Cpu, Activity, UserCheck } from 'lucide-react';
+
 
 const roles = [
   {
@@ -14,6 +15,15 @@ const roles = [
     accent: 'text-[#106e00]',
   },
   {
+    title: 'Kepala Divisi',
+    description: 'Panel persetujuan Tier-1 untuk pengajuan cuti dan swap shift. Kepala Divisi mereview dan meneruskan atau menolak pengajuan sebelum ke Admin.',
+    href: '/kepala-divisi',
+    icon: UserCheck,
+    iconBg: 'bg-[#e0f7f4]',
+    iconColor: 'text-[#0d9488]',
+    accent: 'text-[#0f766e]',
+  },
+  {
     title: 'Admin',
     description: 'Dashboard operasional untuk membaca data SIMRS, monitoring beban layanan, mengelola simulasi jadwal, dan menyetujui pengajuan pergantian shift.',
     href: '/admin/command-center',
@@ -22,6 +32,7 @@ const roles = [
     iconColor: 'text-[#42a5f5]',
     accent: 'text-[#1565c0]',
   },
+
   {
     title: 'Direktur',
     description: 'Dashboard eksekutif minimalis untuk melihat risiko beban kerja, prediksi pasien, burnout simulation, dan rekomendasi strategis.',

@@ -12,6 +12,10 @@ const statusColors: Record<string, string> = {
   Disetujui: "bg-[#e8f5e9] text-[#106e00] border-[#a5d6a7]",
   Ditolak: "bg-[#fce8e8] text-[#c62828] border-[#ef9a9a]",
   "Perlu Perbaikan": "bg-[#e3f2fd] text-[#1565c0] border-[#90caf9]",
+  // Two-tier approval statuses
+  "PENDING_KADIV": "bg-[#fff3e0] text-[#e65100] border-[#ffcc80]",
+  "PENDING_ADMIN": "bg-[#e8eaf6] text-[#283593] border-[#9fa8da]",
+  "REJECTED": "bg-[#fce8e8] text-[#b71c1c] border-[#ef9a9a]",
   // Urgency
   Rendah: "bg-[#e8f5e9] text-[#106e00] border-[#a5d6a7]",
   Sedang: "bg-[#fff8e1] text-[#f57f17] border-[#ffe082]",

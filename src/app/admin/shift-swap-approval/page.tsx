@@ -20,7 +20,7 @@ function getDayStr(dateStr: string) {
   }
 }
 
-type FilterStatus = 'all' | 'Menunggu Persetujuan' | 'Disetujui' | 'Ditolak' | 'Perlu Perbaikan';
+type FilterStatus = 'all' | 'PENDING_ADMIN' | 'Disetujui' | 'Ditolak' | 'Perlu Perbaikan';
 
 export default function ShiftSwapApprovalPage() {
   const { state, approveShiftSwapRequest, rejectShiftSwapRequest, requestShiftSwapImprovement } = useSIMRSDatasetStore();
@@ -50,10 +50,18 @@ export default function ShiftSwapApprovalPage() {
 
   const statusCounts = {
     all: state.shiftSwapRequests.length,
-    'Menunggu Persetujuan': state.shiftSwapRequests.filter((r) => r.status === 'Menunggu Persetujuan').length,
+    'PENDING_ADMIN': state.shiftSwapRequests.filter((r) => r.status === 'PENDING_ADMIN').length,
     'Disetujui': state.shiftSwapRequests.filter((r) => r.status === 'Disetujui').length,
     'Ditolak': state.shiftSwapRequests.filter((r) => r.status === 'Ditolak').length,
     'Perlu Perbaikan': state.shiftSwapRequests.filter((r) => r.status === 'Perlu Perbaikan').length,
+  };
+
+  const statusLabels: Record<FilterStatus, string> = {
+    all: 'Semua',
+    'PENDING_ADMIN': 'Menunggu Persetujuan',
+    'Disetujui': 'Disetujui',
+    'Ditolak': 'Ditolak',
+    'Perlu Perbaikan': 'Perlu Perbaikan',
   };
 
   return (
@@ -76,7 +84,7 @@ export default function ShiftSwapApprovalPage() {
                 : 'bg-white text-on-surface-variant hover:bg-surface-container'
             }`}
           >
-            {status === 'all' ? 'Semua' : status} ({statusCounts[status]})
+            {statusLabels[status]} ({statusCounts[status]})
           </button>
         ))}
       </div>
@@ -85,7 +93,7 @@ export default function ShiftSwapApprovalPage() {
       {filteredRequests.length === 0 ? (
         <EmptyState
           title="Belum ada pengajuan"
-          message="Pengajuan pergantian shift dari tenaga medis akan muncul di sini. Gunakan menu Tenaga Medis untuk membuat pengajuan."
+          message="Pengajuan yang sudah disetujui Kepala Divisi (PENDING_ADMIN) akan muncul di sini untuk persetujuan akhir Admin."
         />
       ) : (
         <div className="space-y-4">
@@ -174,9 +182,9 @@ export default function ShiftSwapApprovalPage() {
                     </div>
                   </div>
 
-                  {/* Actions (Only if waiting) */}
+                  {/* Actions (Only if PENDING_ADMIN) */}
                   <div className="flex flex-col gap-2 w-full sm:w-auto">
-                    {req.status === 'Menunggu Persetujuan' ? (
+                    {req.status === 'PENDING_ADMIN' ? (
                       <>
                         <button onClick={() => handleApprove(req.request_id)} className="clay-btn px-6 py-2.5 bg-primary text-white text-sm font-semibold flex items-center justify-center gap-2 hover:bg-[#095300] w-full sm:w-32">
                           <Check className="w-4 h-4" /> Approve
@@ -194,8 +202,10 @@ export default function ShiftSwapApprovalPage() {
               </div>
 
               {/* Admin Note Input (Optional) */}
-              {req.status === 'Menunggu Persetujuan' && (
+              {req.status === 'PENDING_ADMIN' && (
                 <div className="mt-4 pt-4 border-t border-surface-container-high">
+                  <p className="text-[10px] font-bold text-on-surface-variant mb-1.5 uppercase tracking-wide">Catatan dari Kepala Divisi:</p>
+                  {req.kadiv_note && <p className="text-xs text-on-surface-variant mb-2 bg-surface-container px-3 py-2 rounded-lg">{req.kadiv_note}</p>}
                   <textarea
                     placeholder="Catatan admin (opsional)..."
                     value={adminNote[req.request_id] || ''}

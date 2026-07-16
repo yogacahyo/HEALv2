@@ -87,6 +87,8 @@ type Action =
   | { type: 'APPROVE_SHIFT_SWAP'; payload: { request_id: string; admin_note?: string } }
   | { type: 'REJECT_SHIFT_SWAP'; payload: { request_id: string; admin_note?: string } }
   | { type: 'REQUEST_SHIFT_SWAP_IMPROVEMENT'; payload: { request_id: string; admin_note: string } }
+  | { type: 'KADIV_APPROVE_SHIFT_SWAP'; payload: { request_id: string; kadiv_note?: string } }
+  | { type: 'KADIV_REJECT_SHIFT_SWAP'; payload: { request_id: string; kadiv_note?: string } }
   | { type: 'SET_SELECTED_EMPLOYEE'; payload: number | null };
 
 // ============================================================
@@ -209,7 +211,7 @@ function reducer(state: SIMRSDatasetState, action: Action): SIMRSDatasetState {
       const request: ShiftSwapRequest = {
         ...action.payload,
         request_id: generateId(),
-        status: 'Menunggu Persetujuan',
+        status: 'PENDING_KADIV', // Starts at Kadiv tier
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
@@ -246,6 +248,37 @@ function reducer(state: SIMRSDatasetState, action: Action): SIMRSDatasetState {
       return { ...state, shiftSwapRequests: reqs };
     }
 
+    case 'KADIV_APPROVE_SHIFT_SWAP': {
+      const reqs = state.shiftSwapRequests.map((r) => {
+        if (r.request_id === action.payload.request_id) {
+          return {
+            ...r,
+            status: 'PENDING_ADMIN' as const,
+            kadiv_note: action.payload.kadiv_note,
+            kadiv_approved_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          };
+        }
+        return r;
+      });
+      return { ...state, shiftSwapRequests: reqs };
+    }
+
+    case 'KADIV_REJECT_SHIFT_SWAP': {
+      const reqs = state.shiftSwapRequests.map((r) => {
+        if (r.request_id === action.payload.request_id) {
+          return {
+            ...r,
+            status: 'REJECTED' as const,
+            kadiv_note: action.payload.kadiv_note,
+            updated_at: new Date().toISOString(),
+          };
+        }
+        return r;
+      });
+      return { ...state, shiftSwapRequests: reqs };
+    }
+
     case 'SET_SELECTED_EMPLOYEE':
       return { ...state, selectedEmployeeId: action.payload };
 
@@ -271,6 +304,8 @@ export interface SIMRSContextValue {
   approveShiftSwapRequest: (requestId: string, adminNote?: string) => void;
   rejectShiftSwapRequest: (requestId: string, adminNote?: string) => void;
   requestShiftSwapImprovement: (requestId: string, adminNote: string) => void;
+  kadivApproveRequest: (requestId: string, kadivNote?: string) => void;
+  kadivRejectRequest: (requestId: string, kadivNote?: string) => void;
   setSelectedEmployee: (id: number | null) => void;
 }
 
@@ -331,6 +366,16 @@ export function SIMRSDatasetProvider({ children }: { children: ReactNode }) {
       dispatch({ type: 'REQUEST_SHIFT_SWAP_IMPROVEMENT', payload: { request_id: requestId, admin_note: adminNote } }),
     []
   );
+  const kadivApproveRequest = useCallback(
+    (requestId: string, kadivNote?: string) =>
+      dispatch({ type: 'KADIV_APPROVE_SHIFT_SWAP', payload: { request_id: requestId, kadiv_note: kadivNote } }),
+    []
+  );
+  const kadivRejectRequest = useCallback(
+    (requestId: string, kadivNote?: string) =>
+      dispatch({ type: 'KADIV_REJECT_SHIFT_SWAP', payload: { request_id: requestId, kadiv_note: kadivNote } }),
+    []
+  );
   const setSelectedEmployee = useCallback(
     (id: number | null) => dispatch({ type: 'SET_SELECTED_EMPLOYEE', payload: id }),
     []
@@ -350,6 +395,8 @@ export function SIMRSDatasetProvider({ children }: { children: ReactNode }) {
     approveShiftSwapRequest,
     rejectShiftSwapRequest,
     requestShiftSwapImprovement,
+    kadivApproveRequest,
+    kadivRejectRequest,
     setSelectedEmployee,
   };
 

@@ -566,10 +566,26 @@ export interface ShiftSwapRequest {
   requested_shift: ShiftType;
   reason: string;
   urgency: 'Rendah' | 'Sedang' | 'Tinggi';
-  status: 'Menunggu Persetujuan' | 'Disetujui' | 'Ditolak' | 'Perlu Perbaikan';
+  /**
+   * Two-tier approval status flow:
+   * PENDING_KADIV → (Kadiv Approve) → PENDING_ADMIN → (Admin Approve) → Disetujui
+   *                                                  → (Admin Reject) → Ditolak
+   *              → (Kadiv Reject) → REJECTED
+   * Legacy: 'Menunggu Persetujuan' = same as PENDING_ADMIN (Admin review stage)
+   */
+  status:
+    | 'PENDING_KADIV'
+    | 'PENDING_ADMIN'
+    | 'REJECTED'
+    | 'Menunggu Persetujuan'
+    | 'Disetujui'
+    | 'Ditolak'
+    | 'Perlu Perbaikan';
   ai_suitability_score?: number;
   ai_recommendation?: 'Approved' | 'Review' | 'Rejected';
   ai_constraint_message?: string;
+  kadiv_note?: string;          // Catatan Kepala Divisi
+  kadiv_approved_at?: string;   // Timestamp Kadiv approval
   admin_note?: string;
   created_at: string;
   updated_at: string;
