@@ -207,6 +207,7 @@ export default function TenagaMedisPage() {
       ...swapForm,
     });
     setSwapForm({
+      target_employee_id: "",
       current_date: today,
       current_shift: "Pagi",
       requested_date: "",
@@ -234,6 +235,7 @@ export default function TenagaMedisPage() {
       urgency: cutiForm.urgency,
     });
     setCutiForm({
+      target_employee_id: "",
       requested_date: "",
       requested_end_date: "",
       reason: "",
