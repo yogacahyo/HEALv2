@@ -35,11 +35,11 @@ const burnoutPerUnitData = [
 ];
 
 const burnoutBarColors = [
-  "#c62828",
-  "#e57373",
-  "#ffb74d",
-  "#ffb74d",
-  "#81c784",
+  "#095300",
+  "#106e00",
+  "#1b5e20",
+  "#2ae500",
+  "#39ff14",
 ];
 
 // Data dummy Beban Kerja per Shift (C)
@@ -75,17 +75,17 @@ const risikoLabel: Record<number, string> = {
 };
 
 const risikoColor: Record<number, string> = {
-  1: "#e8f5e9",
-  2: "#fff8e1",
-  3: "#fff3e0",
-  4: "#fce8e8",
+  1: "#f6faf8",
+  2: "#edfced",
+  3: "#e0fbe3",
+  4: "#d0f9d6",
 };
 
 const risikoTextColor: Record<number, string> = {
-  1: "#106e00",
-  2: "#f57f17",
-  3: "#e65100",
-  4: "#c62828",
+  1: "#6b7c63",
+  2: "#1b5e20",
+  3: "#106e00",
+  4: "#095300",
 };
 
 // Data Insight AI (H)
@@ -257,24 +257,9 @@ export default function CommandCenterPage() {
                 iconType="circle"
                 wrapperStyle={{ fontSize: "12px", paddingTop: "10px" }}
               />
-              <Bar
-                dataKey="Pagi"
-                fill="#ffb300"
-                radius={[4, 4, 0, 0]}
-                name="Shift Pagi"
-              />
-              <Bar
-                dataKey="Sore"
-                fill="#e65100"
-                radius={[4, 4, 0, 0]}
-                name="Shift Sore"
-              />
-              <Bar
-                dataKey="Malam"
-                fill="#283593"
-                radius={[4, 4, 0, 0]}
-                name="Shift Malam"
-              />
+                <Bar dataKey="Pagi" name="Shift Pagi" fill="#39ff14" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="Sore" name="Shift Sore" fill="#2ae500" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="Malam" name="Shift Malam" fill="#106e00" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ResponsiveChartCard>

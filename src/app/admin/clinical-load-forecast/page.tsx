@@ -135,12 +135,12 @@ export default function ClinicalLoadForecastPage() {
           >
             <defs>
               <linearGradient id="colorIGD" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#e57373" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="#e57373" stopOpacity={0} />
+                <stop offset="5%" stopColor="#095300" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#095300" stopOpacity={0} />
               </linearGradient>
               <linearGradient id="colorICU" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#42a5f5" stopOpacity={0.2} />
-                <stop offset="95%" stopColor="#42a5f5" stopOpacity={0} />
+                <stop offset="5%" stopColor="#2ae500" stopOpacity={0.2} />
+                <stop offset="95%" stopColor="#2ae500" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid
@@ -169,7 +169,7 @@ export default function ClinicalLoadForecastPage() {
             <Area
               type="monotone"
               dataKey="IGD"
-              stroke="#e57373"
+              stroke="#095300"
               strokeWidth={3}
               fillOpacity={1}
               fill="url(#colorIGD)"
@@ -178,7 +178,7 @@ export default function ClinicalLoadForecastPage() {
             <Area
               type="monotone"
               dataKey="ICU"
-              stroke="#42a5f5"
+              stroke="#2ae500"
               strokeWidth={2}
               fillOpacity={1}
               fill="url(#colorICU)"
@@ -186,7 +186,7 @@ export default function ClinicalLoadForecastPage() {
             <Area
               type="monotone"
               dataKey="OK"
-              stroke="#ffb300"
+              stroke="#106e00"
               strokeWidth={2}
               strokeDasharray="5 5"
               fill="none"
@@ -194,7 +194,7 @@ export default function ClinicalLoadForecastPage() {
             <Area
               type="monotone"
               dataKey="VK"
-              stroke="#283593"
+              stroke="#095300"
               strokeWidth={2}
               strokeDasharray="5 5"
               fill="none"
@@ -202,7 +202,7 @@ export default function ClinicalLoadForecastPage() {
             <Area
               type="monotone"
               dataKey="Isolasi"
-              stroke="#106e00"
+              stroke="#2ae500"
               strokeWidth={2}
               strokeDasharray="5 5"
               fill="none"
@@ -243,24 +243,9 @@ export default function ClinicalLoadForecastPage() {
               iconType="circle"
               wrapperStyle={{ fontSize: "12px", paddingTop: "10px" }}
             />
-            <Bar
-              dataKey="Pagi"
-              fill="#ffb300"
-              radius={[4, 4, 0, 0]}
-              name="Shift Pagi"
-            />
-            <Bar
-              dataKey="Sore"
-              fill="#e65100"
-              radius={[4, 4, 0, 0]}
-              name="Shift Sore"
-            />
-            <Bar
-              dataKey="Malam"
-              fill="#283593"
-              radius={[4, 4, 0, 0]}
-              name="Shift Malam"
-            />
+            <Bar dataKey="Pagi" name="Shift Pagi" fill="#39ff14" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="Sore" name="Shift Sore" fill="#2ae500" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="Malam" name="Shift Malam" fill="#106e00" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </ResponsiveChartCard>

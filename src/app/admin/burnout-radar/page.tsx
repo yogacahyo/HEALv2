@@ -21,11 +21,11 @@ import {
 
 // Data dummy skor burnout per unit (untuk bar chart)
 const burnoutPerUnitBar = [
-  { name: "IGD", score: 86, fill: "#c62828" },
-  { name: "ICU", score: 82, fill: "#e57373" },
-  { name: "OK", score: 74, fill: "#ffb74d" },
-  { name: "VK", score: 71, fill: "#ffb74d" },
-  { name: "Isolasi", score: 68, fill: "#81c784" },
+  { name: "IGD", score: 86, fill: "#095300" },
+  { name: "ICU", score: 82, fill: "#106e00" },
+  { name: "OK", score: 74, fill: "#1b5e20" },
+  { name: "VK", score: 71, fill: "#2ae500" },
+  { name: "Isolasi", score: 68, fill: "#39ff14" },
 ];
 
 // Data untuk Gauge Burnout Risk per Unit
@@ -174,10 +174,10 @@ const heatmapBurnout: {
 ];
 
 function getHeatColor(val: number) {
-  if (val >= 80) return { bg: "#fce8e8", text: "#c62828" };
-  if (val >= 60) return { bg: "#fff3e0", text: "#e65100" };
-  if (val >= 45) return { bg: "#fff8e1", text: "#f57f17" };
-  return { bg: "#e8f5e9", text: "#106e00" };
+  if (val >= 80) return { bg: "#d0f9d6", text: "#095300" };
+  if (val >= 60) return { bg: "#e0fbe3", text: "#106e00" };
+  if (val >= 45) return { bg: "#edfced", text: "#1b5e20" };
+  return { bg: "#f6faf8", text: "#6b7c63" };
 }
 
 const tooltipStyle = {
