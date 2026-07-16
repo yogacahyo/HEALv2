@@ -70,7 +70,7 @@ const rekomendasiStrategis = [
       "Susun on-call team terstruktur untuk mengurangi panggilan mendadak dan kecemasan staf pada shift malam.",
   },
   {
-    unit: "Isolasi / Onkologi",
+    unit: "Rawat Inap",
     prioritas: "Rendah",
     rekomendasi:
       "Terapkan rotasi periodik antar-bangsal setiap 6 bulan untuk menurunkan compassion fatigue.",
@@ -83,7 +83,7 @@ const kontribusiBurnoutData = [
   { unit: "ICU/NICU/PICU", risiko: 82 },
   { unit: "Kamar Operasi", risiko: 74 },
   { unit: "Ruang Bersalin", risiko: 71 },
-  { unit: "Isolasi/Onkologi", risiko: 68 },
+  { unit: "Rawat Inap", risiko: 68 },
 ];
 const burnoutBarColors = [
   "#c62828",
@@ -158,7 +158,7 @@ const staffMonitoring = [
   {
     nama: "Ns. Dwi Santoso",
     profesi: "Perawat",
-    unit: "Onkologi",
+    unit: "Rawat Inap",
     shift: "Sore",
     skor: 73,
     risiko: "Sedang",
@@ -171,7 +171,7 @@ const puncakBebanData = [
   { unit: "IGD", pasien: 62, warna: "#e57373" },
   { unit: "ICU / NICU / PICU", pasien: 38, warna: "#42a5f5" },
   { unit: "Ruang Bersalin", pasien: 32, warna: "#283593" },
-  { unit: "Isolasi / Onkologi", pasien: 20, warna: "#106e00" },
+  { unit: "Rawat Inap", pasien: 20, warna: "#106e00" },
   { unit: "Kamar Operasi", pasien: 16, warna: "#ffb300" },
 ];
 
@@ -523,7 +523,7 @@ export default function DirekturPage() {
                       "ICU / NICU / PICU",
                       "Kamar Operasi",
                       "Ruang Bersalin",
-                      "Isolasi / Onkologi",
+                      "Rawat Inap",
                     ].map((u) => (
                       <span
                         key={u}

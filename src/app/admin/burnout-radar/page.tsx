@@ -22,10 +22,10 @@ import {
 // Data dummy skor burnout per unit (untuk bar chart)
 const burnoutPerUnitBar = [
   { name: "IGD", score: 86, fill: "#095300" },
-  { name: "ICU", score: 82, fill: "#106e00" },
-  { name: "OK", score: 74, fill: "#1b5e20" },
-  { name: "VK", score: 71, fill: "#2ae500" },
-  { name: "Isolasi", score: 68, fill: "#39ff14" },
+  { name: "ICU/NICU/PICU", score: 82, fill: "#106e00" },
+  { name: "Kamar Operasi", score: 74, fill: "#1b5e20" },
+  { name: "Ruang Bersalin", score: 71, fill: "#2ae500" },
+  { name: "Rawat Inap", score: 68, fill: "#39ff14" },
 ];
 
 // Data untuk Gauge Burnout Risk per Unit
@@ -37,34 +37,42 @@ const unitGaugeData = {
     { subject: "Absensi", value: 45 },
     { subject: "Tekanan Emergency", value: 85 },
   ],
-  ICU: [
+  ICU_NICU_PICU: [
     { subject: "Beban Pasien", value: 85 },
     { subject: "Shift Malam", value: 70 },
     { subject: "Lembur", value: 75 },
     { subject: "Absensi", value: 40 },
     { subject: "Tekanan Emergency", value: 80 },
   ],
-  OK: [
+  KamarOperasi: [
     { subject: "Beban Pasien", value: 70 },
     { subject: "Shift Malam", value: 50 },
     { subject: "Lembur", value: 85 },
     { subject: "Absensi", value: 30 },
     { subject: "Tekanan Emergency", value: 75 },
   ],
-  VK: [
+  RuangBersalin: [
     { subject: "Beban Pasien", value: 75 },
     { subject: "Shift Malam", value: 60 },
     { subject: "Lembur", value: 70 },
     { subject: "Absensi", value: 35 },
     { subject: "Tekanan Emergency", value: 80 },
   ],
-  Isolasi: [
+  RawatInap: [
     { subject: "Beban Pasien", value: 65 },
     { subject: "Shift Malam", value: 80 },
     { subject: "Lembur", value: 60 },
     { subject: "Absensi", value: 50 },
     { subject: "Tekanan Emergency", value: 60 },
   ],
+};
+
+const unitLabelMap: Record<keyof typeof unitGaugeData, string> = {
+  IGD: "Unit IGD",
+  ICU_NICU_PICU: "Unit ICU/NICU/PICU",
+  KamarOperasi: "Unit Kamar Operasi",
+  RuangBersalin: "Unit Ruang Bersalin",
+  RawatInap: "Unit Rawat Inap",
 };
 
 const DonutGauge = ({ value, label }: { value: number; label: string }) => {
@@ -149,7 +157,7 @@ const staffMonitoring = [
   {
     nama: "Ns. Dwi Santoso",
     profesi: "Perawat",
-    unit: "Onkologi",
+    unit: "Rawat Inap",
     shiftDominan: "Sore",
     skorFatigue: 73,
     risikoBurnout: "Sedang",
@@ -229,7 +237,7 @@ export default function BurnoutRadarPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Gauge Chart Grid — Profil Risiko Unit */}
         <ResponsiveChartCard
-          title={`Burnout Risk Gauge Grid Dashboard: ${selectedUnit}`}
+          title={`Burnout Risk Gauge Grid Dashboard: ${unitLabelMap[selectedUnit]}`}
           subtitle="5 burnout risk factors in the unit with the highest scores."
           height={320}
           headerAction={
@@ -240,9 +248,9 @@ export default function BurnoutRadarPage() {
               }
               className="text-sm border border-surface-container-high rounded-lg px-2 py-1 bg-surface outline-none focus:ring-1 focus:ring-[#1b5e20]"
             >
-              {Object.keys(unitGaugeData).map((unit) => (
+              {(Object.keys(unitGaugeData) as Array<keyof typeof unitGaugeData>).map((unit) => (
                 <option key={unit} value={unit}>
-                  {unit}
+                  {unitLabelMap[unit]}
                 </option>
               ))}
             </select>

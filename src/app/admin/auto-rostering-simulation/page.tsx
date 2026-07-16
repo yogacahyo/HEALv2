@@ -57,7 +57,7 @@ const dummyStaffList = [
   {
     nama: "Ns. Dwi Santoso",
     profesi: "Perawat",
-    unit: "Isolasi / Onkologi",
+    unit: "Rawat Inap",
     risiko: "Sedang",
   },
   {
@@ -93,7 +93,7 @@ const dummyStaffList = [
   {
     nama: "Ns. Hana Maharani",
     profesi: "Perawat",
-    unit: "Isolasi / Onkologi",
+    unit: "Rawat Inap",
     risiko: "Rendah",
   },
   {

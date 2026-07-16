@@ -492,7 +492,7 @@ export const mockShiftSwapRequests: ShiftSwapRequest[] = [
     requester_id: 'N-006',
     requester_role: 'perawat',
     requester_name: 'Ns. Fitri Handayani',
-    department_name: 'Isolasi',
+    department_name: 'Rawat Inap',
     current_date: '2026-07-18',
     current_shift: 'Pagi',
     requested_date: '2026-07-18',

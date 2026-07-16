@@ -27,20 +27,20 @@ import {
 
 // Data prediksi beban pasien per unit 14 hari
 const forecastData = [
-  { tanggal: "10 Jul", IGD: 42, ICU: 28, OK: 18, VK: 22, Isolasi: 15 },
-  { tanggal: "11 Jul", IGD: 45, ICU: 30, OK: 22, VK: 20, Isolasi: 16 },
-  { tanggal: "12 Jul", IGD: 50, ICU: 32, OK: 20, VK: 25, Isolasi: 14 },
-  { tanggal: "13 Jul", IGD: 55, ICU: 35, OK: 24, VK: 28, Isolasi: 18 },
-  { tanggal: "14 Jul", IGD: 52, ICU: 33, OK: 19, VK: 26, Isolasi: 17 },
-  { tanggal: "15 Jul", IGD: 58, ICU: 36, OK: 21, VK: 30, Isolasi: 19 },
-  { tanggal: "16 Jul", IGD: 62, ICU: 38, OK: 16, VK: 32, Isolasi: 20 },
-  { tanggal: "17 Jul", IGD: 48, ICU: 31, OK: 23, VK: 24, Isolasi: 16 },
-  { tanggal: "18 Jul", IGD: 46, ICU: 29, OK: 20, VK: 22, Isolasi: 15 },
-  { tanggal: "19 Jul", IGD: 53, ICU: 34, OK: 22, VK: 27, Isolasi: 18 },
-  { tanggal: "20 Jul", IGD: 56, ICU: 36, OK: 18, VK: 29, Isolasi: 19 },
-  { tanggal: "21 Jul", IGD: 60, ICU: 37, OK: 15, VK: 31, Isolasi: 21 },
-  { tanggal: "22 Jul", IGD: 64, ICU: 40, OK: 17, VK: 34, Isolasi: 22 },
-  { tanggal: "23 Jul", IGD: 58, ICU: 35, OK: 20, VK: 28, Isolasi: 18 },
+  { tanggal: "10 Jul", IGD: 42, ICU: 28, KamarOperasi: 18, RuangBersalin: 22, RawatInap: 15 },
+  { tanggal: "11 Jul", IGD: 45, ICU: 30, KamarOperasi: 22, RuangBersalin: 20, RawatInap: 16 },
+  { tanggal: "12 Jul", IGD: 50, ICU: 32, KamarOperasi: 20, RuangBersalin: 25, RawatInap: 14 },
+  { tanggal: "13 Jul", IGD: 55, ICU: 35, KamarOperasi: 24, RuangBersalin: 28, RawatInap: 18 },
+  { tanggal: "14 Jul", IGD: 52, ICU: 33, KamarOperasi: 19, RuangBersalin: 26, RawatInap: 17 },
+  { tanggal: "15 Jul", IGD: 58, ICU: 36, KamarOperasi: 21, RuangBersalin: 30, RawatInap: 19 },
+  { tanggal: "16 Jul", IGD: 62, ICU: 38, KamarOperasi: 16, RuangBersalin: 32, RawatInap: 20 },
+  { tanggal: "17 Jul", IGD: 48, ICU: 31, KamarOperasi: 23, RuangBersalin: 24, RawatInap: 16 },
+  { tanggal: "18 Jul", IGD: 46, ICU: 29, KamarOperasi: 20, RuangBersalin: 22, RawatInap: 15 },
+  { tanggal: "19 Jul", IGD: 53, ICU: 34, KamarOperasi: 22, RuangBersalin: 27, RawatInap: 18 },
+  { tanggal: "20 Jul", IGD: 56, ICU: 36, KamarOperasi: 18, RuangBersalin: 29, RawatInap: 19 },
+  { tanggal: "21 Jul", IGD: 60, ICU: 37, KamarOperasi: 15, RuangBersalin: 31, RawatInap: 21 },
+  { tanggal: "22 Jul", IGD: 64, ICU: 40, KamarOperasi: 17, RuangBersalin: 34, RawatInap: 22 },
+  { tanggal: "23 Jul", IGD: 58, ICU: 35, KamarOperasi: 20, RuangBersalin: 28, RawatInap: 18 },
 ];
 
 // Prediksi lonjakan per shift
@@ -49,7 +49,7 @@ const shiftPrediction = [
   { unit: "ICU/NICU/PICU", Pagi: 22, Sore: 28, Malam: 38 },
   { unit: "Kamar Operasi", Pagi: 30, Sore: 18, Malam: 8 },
   { unit: "Ruang Bersalin", Pagi: 15, Sore: 20, Malam: 32 },
-  { unit: "Isolasi/Onkologi", Pagi: 12, Sore: 14, Malam: 18 },
+  { unit: "Rawat Inap", Pagi: 12, Sore: 14, Malam: 18 },
 ];
 
 // Indikator unit potensi beban tertinggi
@@ -68,7 +68,7 @@ const unitPotensiTertinggi = [
     level: "Sedang",
   },
   {
-    unit: "Isolasi / Onkologi",
+    unit: "Rawat Inap",
     prediksi: 22,
     peningkatan: "+8%",
     level: "Sedang",
@@ -169,6 +169,7 @@ export default function ClinicalLoadForecastPage() {
             <Area
               type="monotone"
               dataKey="IGD"
+              name="IGD"
               stroke="#095300"
               strokeWidth={3}
               fillOpacity={1}
@@ -178,6 +179,7 @@ export default function ClinicalLoadForecastPage() {
             <Area
               type="monotone"
               dataKey="ICU"
+              name="ICU/NICU/PICU"
               stroke="#2ae500"
               strokeWidth={2}
               fillOpacity={1}
@@ -185,7 +187,8 @@ export default function ClinicalLoadForecastPage() {
             />
             <Area
               type="monotone"
-              dataKey="OK"
+              dataKey="KamarOperasi"
+              name="Kamar Operasi"
               stroke="#106e00"
               strokeWidth={2}
               strokeDasharray="5 5"
@@ -193,7 +196,8 @@ export default function ClinicalLoadForecastPage() {
             />
             <Area
               type="monotone"
-              dataKey="VK"
+              dataKey="RuangBersalin"
+              name="Ruang Bersalin"
               stroke="#095300"
               strokeWidth={2}
               strokeDasharray="5 5"
@@ -201,7 +205,8 @@ export default function ClinicalLoadForecastPage() {
             />
             <Area
               type="monotone"
-              dataKey="Isolasi"
+              dataKey="RawatInap"
+              name="Rawat Inap"
               stroke="#2ae500"
               strokeWidth={2}
               strokeDasharray="5 5"

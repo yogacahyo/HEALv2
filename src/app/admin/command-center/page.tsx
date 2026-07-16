@@ -31,7 +31,7 @@ const burnoutPerUnitData = [
   { unit: "ICU/NICU/PICU", risiko: 82 },
   { unit: "Kamar Operasi", risiko: 74 },
   { unit: "Ruang Bersalin", risiko: 71 },
-  { unit: "Isolasi/Onkologi", risiko: 68 },
+  { unit: "Rawat Inap", risiko: 68 },
 ];
 
 const burnoutBarColors = [
@@ -48,7 +48,7 @@ const bebanKerjaData = [
   { unit: "ICU/NICU/PICU", Pagi: 75, Sore: 80, Malam: 88 },
   { unit: "Kamar Operasi", Pagi: 86, Sore: 72, Malam: 58 },
   { unit: "Ruang Bersalin", Pagi: 66, Sore: 74, Malam: 85 },
-  { unit: "Isolasi/Onkologi", Pagi: 70, Sore: 69, Malam: 73 },
+  { unit: "Rawat Inap", Pagi: 70, Sore: 69, Malam: 73 },
 ];
 
 // Data dummy Heatmap Risiko Kelelahan (D)
@@ -112,7 +112,7 @@ const aiInsights = [
   },
   {
     id: 5,
-    text: "Isolasi / Onkologi membutuhkan rotasi berkala untuk menurunkan compassion fatigue pada perawat.",
+    text: "Rawat Inap membutuhkan rotasi berkala untuk menurunkan compassion fatigue pada perawat.",
     severity: "low" as const,
   },
 ];
@@ -256,10 +256,28 @@ export default function CommandCenterPage() {
               <Legend
                 iconType="circle"
                 wrapperStyle={{ fontSize: "12px", paddingTop: "10px" }}
+                formatter={(value) => (
+                  <span style={{ color: "#081C15" }}>{value}</span>
+                )}
               />
-                <Bar dataKey="Pagi" name="Shift Pagi" fill="#39ff14" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="Sore" name="Shift Sore" fill="#2ae500" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="Malam" name="Shift Malam" fill="#106e00" radius={[4, 4, 0, 0]} />
+              <Bar
+                dataKey="Pagi"
+                name="Shift Pagi"
+                fill="#39ff14"
+                radius={[4, 4, 0, 0]}
+              />
+              <Bar
+                dataKey="Sore"
+                name="Shift Sore"
+                fill="#2ae500"
+                radius={[4, 4, 0, 0]}
+              />
+              <Bar
+                dataKey="Malam"
+                name="Shift Malam"
+                fill="#106e00"
+                radius={[4, 4, 0, 0]}
+              />
             </BarChart>
           </ResponsiveContainer>
         </ResponsiveChartCard>
